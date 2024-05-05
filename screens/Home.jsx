@@ -5,6 +5,7 @@ function HomeScreen() {
     return (
       <View>
         <Mapa/>
+        <Text>xd</Text>
       </View>
     );
 }
