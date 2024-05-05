@@ -1,9 +1,10 @@
 import { View, Text, StyleSheet } from 'react-native';
+import { Mapa } from '../components/ubicacion/Mapa';
 
 function HomeScreen() {
     return (
       <View>
-        <Text>Hola, desde el home</Text>
+        <Mapa/>
       </View>
     );
 }

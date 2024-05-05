@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../../screens/Home';
 import NegocioScreen from '../../screens/Negocio';
@@ -6,6 +6,9 @@ import NegocioScreen from '../../screens/Negocio';
 const Tab = createBottomTabNavigator();
 
 function MyTabs() {
+
+
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -15,7 +18,7 @@ function MyTabs() {
       }}
     >
       <Tab.Screen 
-        name="Home" 
+        name="a" 
         component={HomeScreen} 
         options={{ tabBarBadge: 3 }} // Opcional: agrega una insignia al ícono
       />
