@@ -3,9 +3,11 @@ import HomeScreen from '../../screens/Home';
 import NegocioScreen from '../../screens/Negocio';
 import MyTabs from './BottomNavigator';
 
+
 const Drawer = createDrawerNavigator();
 
 function DrawerNavigator() {
+
   return (
     <Drawer.Navigator>
       <Drawer.Screen name="Butzu" component={MyTabs} />
