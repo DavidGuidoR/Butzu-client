@@ -89,14 +89,14 @@ const styles = StyleSheet.create({
         marginRight: 10,
         paddingVertical: 10,
         borderRadius: 5,
-        backgroundColor: '#A0A0A0', // Color gris para cancelar
+        backgroundColor: '#A0A0A0', 
         alignItems: 'center',
     },
     submitButton: {
         flex: 1,
         paddingVertical: 10,
         borderRadius: 5,
-        backgroundColor: '#000000', // Color negro para enviar
+        backgroundColor: '#000000', 
         alignItems: 'center',
     },
     buttonText: {
