@@ -41,13 +41,13 @@ function NegocioScreen() {
   // Función para la visualización
   function handleView() {
     setModalVisible(false);
-    navigation.navigate('Negocio', { id: currentBusinessId, edit: false });
+    navigation.navigate('NegocioEspecif', { id: currentBusinessId, edit: false });
   }
 
   // Funciones para la edición
   function handleEdit() {
     setModalVisible(false);
-    navigation.navigate('Negocio', { id: currentBusinessId, edit: true });
+    navigation.navigate('NegocioEspecif', { id: currentBusinessId, edit: true });
   }
 
   // Función para eliminar boton

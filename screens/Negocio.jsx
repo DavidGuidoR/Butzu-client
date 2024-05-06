@@ -7,7 +7,8 @@ import ActionModal from '../components/ModalNegocio';
 import axios from 'axios';
 import ButtonCreate from '../components/ButtonCrearNegocio';
 
-function NegocioEspecifScreen(bussinesId, edit) {
+function NegocioEspecifScreen({ route}) {
+  const { id: businessId, edit } = route.params;
   const isFocused = useIsFocused();
   const [isModalVisible, setModalVisible] = useState(false);
   const [currentitemId, setCurrentItemId] = useState(null);
@@ -68,16 +69,15 @@ function NegocioEspecifScreen(bussinesId, edit) {
 
     try {
       // Realizar la solicitud con el encabezado de autorización
-      console.log(token);
-      const response = await axios.get(`http://192.168.100.11:3000/negocio/${bussinesId}`, {
+      const response = await axios.get(`http://10.31.10.14:3000/negocio/${businessId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
+      console.log(response.data.negocio.items)
       // Actualizar el estado según la respuesta
       if (response.data && response.data.length > 0) {
-        setData(response.data);
+        setData(response.data.negocio.items);
       } else {
         setError('No hay negocios creados aún');
       }
@@ -103,18 +103,16 @@ function NegocioEspecifScreen(bussinesId, edit) {
         {/* Textos para confirmar Secure Store */}
       {/* <Text>ID ALMACENADO: {userId}</Text>
       <Text>TOKEN ALMACENADO: {token}</Text> */}
-      <Text style = {styles.text}>Productos creados</Text>
-      <ButtonCreate/>
+      <Text style = {styles.text}>Negocio</Text>
       {/* <Text style = {styles.text}>Negocio id: {currentItemId}</Text> */}
-      {data && data.map((item, index) => (
-      
+      {data && data.map((items, index) => (
         <ContainerItem
           key={index}
-          photo={item.photo}
-          business_name={item.business_name}
-          description={item.description}
+          photo={items.photo}
+          name={items.name}
+          description={items.description}
           editar={true}
-          onEditPress={() => openModalWithId(item._id, item.business_name)}
+          onEditPress={() => openModalWithId(items._id, items.name)}
         />
       ))}
     </ScrollView>
