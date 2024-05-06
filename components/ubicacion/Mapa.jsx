@@ -23,7 +23,7 @@ export function Mapa({ style }) {
       {location?.coords && (
         <MapView
           ref={mapRef}
-          style={[styles.map, style]} // Aquí se aplica el estilo del contenedor y del mapa
+          style={[styles.map, style]} 
           onLayout={() => {
             if (location?.coords) {
               mapRef.current.animateToRegion({
@@ -52,5 +52,6 @@ const styles = StyleSheet.create({
   map: {
     borderRadius: 15, // Aplica el borderRadius al mapa directamente
     overflow: 'hidden', // Asegura que la sombra se recorte correctamente
+    
   },
 });
