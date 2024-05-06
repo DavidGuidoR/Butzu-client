@@ -8,7 +8,7 @@ const screenWidth = Dimensions.get('window').width;
 // Importa la imagen local de tres puntos
 const mostrarMas = require('../assets/mostrar-mas-boton.png');
 
-const MiComponente = ({ photo, business_name, description, editar, onEditPress }) => {
+const ContainerItem = ({ photo, business_name, description, editar, onEditPress }) => {
   return (
     <View style={styles.container}>
       <Image 
@@ -69,4 +69,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MiComponente;
+export default ContainerItem;

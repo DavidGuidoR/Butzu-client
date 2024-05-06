@@ -1,8 +1,12 @@
 // ActionModal.js
 import React from 'react';
-import { View, Text, Modal, Button, StyleSheet } from 'react-native';
+import { View, Text, Modal, Button, StyleSheet, TouchableOpacity, Image} from 'react-native';
 
-export default function ActionModal({ visible, onClose, onEdit, onDelete, onView }) {
+const editIcon = require('../assets/pen.png'); // Asegúrate de tener estos iconos
+const deleteIcon = require('../assets/trash-can.png');
+const viewIcon = require('../assets/eye.png');
+
+export default function ActionModal({ visible, onClose, onEdit, onDelete, onView, name }) {
   return (
     <Modal
       transparent={true}
@@ -12,12 +16,28 @@ export default function ActionModal({ visible, onClose, onEdit, onDelete, onView
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
-          <Button title="Editar" onPress={onEdit} />
-          <Button title="Eliminar" onPress={onDelete} />
-          <Button title="Ver" onPress={onView} />
-          <Button title="Cerrar" onPress={onClose} />
+        <Text style={styles.title}>{name}</Text>
+
+          <TouchableOpacity style={styles.button} onPress={onEdit}>
+            <Image source={editIcon} style={styles.icon} />
+            <Text style={styles.buttonText}>Editar</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.button} onPress={onDelete}>
+            <Image source={deleteIcon} style={styles.icon} />
+            <Text style={styles.buttonText}>Eliminar</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.button} onPress={onView}>
+            <Image source={viewIcon} style={styles.icon} />
+            <Text style={styles.buttonText}>Ver</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+            <Text style={styles.closeButtonText}>Cerrar</Text>
+          </TouchableOpacity>
         </View>
-      </View>
+      </View> 
     </Modal>
   );
 }
@@ -36,4 +56,34 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     elevation: 5,
   },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
+  buttonText: {
+    marginLeft: 10,
+    fontSize: 16,
+    color: 'black',
+  },
+  icon: {
+    width: 20,
+    height: 20,
+  },
+  closeButton: {
+    marginTop: 20,
+    alignItems: 'center',
+    paddingVertical: 10,
+    backgroundColor: 'gray',
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  }
 });

@@ -2,16 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Text, StyleSheet, ScrollView, View, Image} from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import * as SecureStore from 'expo-secure-store';
-import ContainerItem from '../components/ContainerItem';
+import ContainerNegocio from '../components/ContainerNegocio';
 import ActionModal from '../components/ModalNegocio';
 import axios from 'axios';
 import ButtonCreate from '../components/ButtonCrearNegocio';
 
-function NegocioEspecifScreen(bussinesId, edit) {
+function NegocioScreen() {
   const isFocused = useIsFocused();
   const [isModalVisible, setModalVisible] = useState(false);
-  const [currentitemId, setCurrentItemId] = useState(null);
-  const [currentItemName, setCurrentItemName] = useState(null);
+  const [currentBusinessId, setCurrentBusinessId] = useState(null);
+  const [currentBusinessName, setCurrentBusinessName] = useState(null);
   const [userId, setUserId] = useState('');
   const [token, setToken] = useState('');
   const [data, setData] = useState(null);
@@ -28,37 +28,37 @@ function NegocioEspecifScreen(bussinesId, edit) {
     setToken(fetchedToken || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.G_SwrKpXhr33H0xf-R6nQfIhUTA0Kd8vkJh5FEKXPLM');
     setUserId(fetchedUserId || '65f3a9dd8ffad84cd731ff20');
 
-    await fetchBusinessWithDetails();
+    await fetchBusinesses();
   }
 
   // Función para mostrar modal de opciones
-  function openModalWithId(itemId, ItemName) {
-    setCurrentItemId(itemId);
-    setCurrentItemName(itemName);
+  function openModalWithId(businessId, businessName) {
+    setCurrentBusinessId(businessId);
+    setCurrentBusinessName(businessName);
     setModalVisible(true);
   }
 
   // Función para la visualización
   function handleView() {
     setModalVisible(false);
-    navigation.navigate('Item', { id: currentItemId, edit: false });
+    navigation.navigate('Negocio', { id: currentBusinessId, edit: false });
   }
 
   // Funciones para la edición
   function handleEdit() {
     setModalVisible(false);
-    navigation.navigate('Item', { id: currentItemId, edit: true });
+    navigation.navigate('Negocio', { id: currentBusinessId, edit: true });
   }
 
   // Función para eliminar boton
   function handleDelete() {
     setModalVisible(false);
     // Implementar la lógica de eliminación aquí
-    console.log('Eliminar Item con ID:', currentItemId);
+    console.log('Eliminar negocio con ID:', currentBusinessId);
   }
 
   // Función para hacer la solicitud con encabezado
-  async function fetchBusinessWithDetails() {
+  async function fetchBusinesses() {
     // Asegúrate de que el token y el userId están establecidos
     if (!token) {
       setError('No hay token disponible');
@@ -69,7 +69,7 @@ function NegocioEspecifScreen(bussinesId, edit) {
     try {
       // Realizar la solicitud con el encabezado de autorización
       console.log(token);
-      const response = await axios.get(`http://192.168.100.11:3000/negocio/${bussinesId}`, {
+      const response = await axios.get(`http://10.31.10.14:3000/negocio/user/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -103,23 +103,22 @@ function NegocioEspecifScreen(bussinesId, edit) {
         {/* Textos para confirmar Secure Store */}
       {/* <Text>ID ALMACENADO: {userId}</Text>
       <Text>TOKEN ALMACENADO: {token}</Text> */}
-      <Text style = {styles.text}>Productos creados</Text>
-      <ButtonCreate/>
-      {/* <Text style = {styles.text}>Negocio id: {currentItemId}</Text> */}
-      {data && data.map((item, index) => (
+      <Text style = {styles.text}>Negocios creados</Text>
+      {/* <Text style = {styles.text}>Negocio id: {currentBusinessId}</Text> */}
+      {data && data.map((negocio, index) => (
       
-        <ContainerItem
+        <ContainerNegocio
           key={index}
-          photo={item.photo}
-          business_name={item.business_name}
-          description={item.description}
+          photo={negocio.photo}
+          business_name={negocio.business_name}
+          description={negocio.description}
           editar={true}
-          onEditPress={() => openModalWithId(item._id, item.business_name)}
+          onEditPress={() => openModalWithId(negocio._id, negocio.business_name)}
         />
       ))}
     </ScrollView>
     <ActionModal
-    name={currentItemName}
+    name={currentBusinessName}
     visible={isModalVisible}
     onClose={() => setModalVisible(false)}
     onEdit={handleEdit}
@@ -157,4 +156,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NegocioEspecifScreen;
+export default NegocioScreen;
+
