@@ -1,24 +1,25 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity } from 'react-native';
 
-
+// Importa las imagenes por defecto
+const mostrarMas = require('../assets/mostrar-mas-boton.png');
+const noImage = require('../assets/no-image.png')
 // Obtén el ancho de la pantalla
 const screenWidth = Dimensions.get('window').width;
 
-// Importa la imagen local de tres puntos
-const mostrarMas = require('../assets/mostrar-mas-boton.png');
 
 const ContainerItem = ({ photo, name, description, editar, onEditPress }) => {
   return (
     <View style={styles.container}>
-      <Image 
-        source={photo ? { uri: photo } : require('../assets/no-image.png')}
-        style={styles.image}
-      />
       <View style={styles.textContainer}>
         <Text style={styles.title}>{name}</Text>
         <Text style={styles.description}>{description}</Text>
       </View>
+      <Image 
+        // source={photo ? { uri: photo } : noImage}
+        source={noImage}
+        style={styles.image}
+      />
 
       {editar && (
         <TouchableOpacity onPress={onEditPress}>
@@ -45,11 +46,13 @@ const styles = StyleSheet.create({
     elevation: 5,
     width: screenWidth - 40,
     alignSelf: 'center',
+    height: 120
   },
   image: {
-    width: 50,
-    height: 50,
+    width: 70,
+    height: 70,
     borderRadius: 25,
+    marginLeft: 20
   },
   textContainer: {
     flex: 1,
@@ -57,11 +60,14 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: 'bold',
-    fontSize: 18,
+    fontSize: 22,
     paddingBottom: 10,
+    borderBottomWidth: 2,
+    borderBottomColor: 'black',
+    borderStyle: 'dashed',
   },
   description: {
-    color: 'gray',
+    marginVertical: 10,
   },
   mostrarMas: {
     width: 24,
