@@ -88,7 +88,7 @@ function NegocioEspecifScreen({ route}) {
     
     <View>
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
-      <Text style = {styles.text}>Negocio nombre: {businessData.business_name}</Text>
+      <Text style = {styles.text}>Negocio nombre: </Text>
       {itemData && itemData.map((item, index) => (
       
         <ContainerItem
