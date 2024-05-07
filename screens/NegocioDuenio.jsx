@@ -19,17 +19,6 @@ function NegocioScreen() {
   const [loading, setLoading] = useState(null);
   const navigation = useNavigation();
 
-  // Función para obtener el token y el ID desde Secure Store
-  async function loadTokenAndId() {
-    const fetchedToken = await SecureStore.getItemAsync('auth_token');
-    const fetchedUserId = await SecureStore.getItemAsync('auth_id');
-
-    // Asignar valores al estado local
-    setToken(fetchedToken || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.G_SwrKpXhr33H0xf-R6nQfIhUTA0Kd8vkJh5FEKXPLM');
-    setUserId(fetchedUserId || '65f3a9dd8ffad84cd731ff20');
-
-    await fetchBusinesses();
-  }
 
   // Función para mostrar modal de opciones
   function openModalWithId(businessId, businessName) {
@@ -41,13 +30,13 @@ function NegocioScreen() {
   // Función para la visualización
   function handleView() {
     setModalVisible(false);
-    navigation.navigate('Negocio', { id: currentBusinessId, edit: false });
+    navigation.navigate('NegocioEspecif', { id: currentBusinessId, edit: false });
   }
 
   // Funciones para la edición
   function handleEdit() {
     setModalVisible(false);
-    navigation.navigate('Negocio', { id: currentBusinessId, edit: true });
+    navigation.navigate('NegocioEspecif', { id: currentBusinessId, edit: true });
   }
 
   // Función para eliminar boton
@@ -58,43 +47,41 @@ function NegocioScreen() {
   }
 
   // Función para hacer la solicitud con encabezado
-  async function fetchBusinesses() {
-    // Asegúrate de que el token y el userId están establecidos
-    if (!token) {
-      setError('No hay token disponible');
-      setLoading(false);
-      return;
-    }
-
+  const fetchData = async () => {
+    setLoading(true);
     try {
-      // Realizar la solicitud con el encabezado de autorización
-      console.log(token);
-      const response = await axios.get(`http://10.31.10.14:3000/negocio/user/${userId}`, {
+      let token = await SecureStore.getItemAsync('auth_token');
+      let userId = await SecureStore.getItemAsync('auth_id');
+      if (!token || !userId) {
+        token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.G_SwrKpXhr33H0xf-R6nQfIhUTA0Kd8vkJh5FEKXPLM';
+        userId =  '65f3a9dd8ffad84cd731ff20'
+      }
+
+      console.log(token)
+      console.log(userId)
+      const response = await axios.get(`http://192.168.100.11:3000/negocio/user/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      // Actualizar el estado según la respuesta
       if (response.data && response.data.length > 0) {
         setData(response.data);
       } else {
         setError('No hay negocios creados aún');
       }
     } catch (err) {
-      console.log(err);
-      setError('Error al cargar los negocios');
+      setError('Error al cargar los negocios: ' + err.message);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
-  // Llamar a `loadTokenAndId` y `fetchBusinesses` cada vez que la pantalla está enfocada
+  // Se ejecuta en cada renderizado
   useEffect(() => {
-    if (isFocused) {;
-      loadTokenAndId();
+    if (isFocused) {
+    fetchData();
     }
-  }, [isFocused]);
+  }, [userId || isFocused]);
 
   return (
     
