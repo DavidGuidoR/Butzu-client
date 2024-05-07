@@ -8,14 +8,19 @@ import NegocioEspecif from '../../screens/Negocio';
 import LoginScreen from '../../screens/Login';
 import PruebaSecure from '../../screens/PruebasSecure'
 import CrearNegocioScreen from '../../screens/CrearNegocio';
+import CreateUserScreen from '../../screens/CreateUser';
+import { createStackNavigator } from '@react-navigation/stack';
+import InitialScreen from '../../screens/Initial';
 
+const ojoImage = require('../../../assets/ojo.png')
 const Drawer = createDrawerNavigator();
+const Stack = createStackNavigator();
 
 function CustomDrawerContent(props) {
   return (
     <DrawerContentScrollView {...props}>
       <View style={{ backgroundColor: 'black', flexDirection: 'row', alignItems: 'center', paddingVertical: 20, paddingHorizontal: 20, height: 200 }}>
-        <Image source={require('../../assets/ojo.png')} style={{ width: 80, height: 80, marginRight: 10, borderRadius: 50 }} />
+        <Image source={ojoImage} style={{ width: 80, height: 80, marginRight: 10, borderRadius: 50 }} />
         <View style={{ marginLeft: 10 }}>
           <Text style={{ color: 'white', fontSize: 27, paddingVertical: 20 }}>Usuario</Text>
         </View>
@@ -52,9 +57,34 @@ function DrawerNavigator() {
           <Drawer.Screen 
           name="Negocios" 
           component={NegocioScreen} />
+          <Drawer.Screen 
+          name="Registro" 
+          component={InitialScreen} />
       <Drawer.Screen name="Cerrar sesión" component={NegocioScreen} />
-    </Drawer.Navigator>
+      </Drawer.Navigator>
+);
+}
+
+function AuthStackNavigator() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Drawer" component={DrawerNavigator} options={{ headerShown: false }} />
+      <Stack.Screen name="Initial" component={InitialScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Login" component={LoginScreen}  />
+      <Stack.Screen name="CreateUser" component={CreateUserScreen} options={{ headerShown: false }} />
+    </Stack.Navigator>
   );
 }
 
-export default DrawerNavigator;
+
+// Integrar ambos navegadores
+function AppNavigator() {
+  return (
+    <Stack.Navigator initialRouteName="AuthStack">
+      <Stack.Screen name="AppDrawer" component={DrawerNavigator} options={{ headerShown: false }} />
+      <Stack.Screen name="AuthStack" component={AuthStackNavigator} options={{ headerShown: false }} />
+    </Stack.Navigator>
+  );
+}
+
+export default AppNavigator;
