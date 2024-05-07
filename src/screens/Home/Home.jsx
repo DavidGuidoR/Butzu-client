@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, Text } from 'react-native';
-import { Mapa } from '../components/ubicacion/Mapa';
-import BarraDeBusqueda from '../components/busqueda/Barra';
-import MiComponente from '../components/lista/containerNegocio';
+import { Mapa } from '../../components/ubicacion/Mapa';
+import BarraDeBusqueda from '../../components/busqueda/Barra';
+import MiComponente from '../../components/lista/containerNegocio';
 
 function HomeScreen() {
   const [negocios, setNegocios] = useState([]);

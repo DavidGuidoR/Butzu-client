@@ -2,48 +2,47 @@ import React, { useState, useEffect } from 'react';
 import { Text, StyleSheet, ScrollView, View, Image} from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import * as SecureStore from 'expo-secure-store';
-import ContainerNegocio from '../components/ContainerNegocio';
-import ActionModal from '../components/ModalNegocio';
+import ActionModal from '../../components/Negocio/ModalNegocio';
 import axios from 'axios';
-import ButtonCreate from '../components/ButtonCrearNegocio';
+import ContainerItem from '../../components/ContainerItem';
 
-function NegocioScreen() {
+function NegocioEspecifScreen({ route}) {
+  const {id: businessId, edit } = route.params;
   const isFocused = useIsFocused();
   const [isModalVisible, setModalVisible] = useState(false);
-  const [currentBusinessId, setCurrentBusinessId] = useState(null);
-  const [currentBusinessName, setCurrentBusinessName] = useState(null);
-  const [userId, setUserId] = useState('');
-  const [token, setToken] = useState('');
-  const [data, setData] = useState(null);
+  const [currentItemId, setCurrentItemId] = useState(null);
+  const [currentItemName, setCurrentItemName] = useState(null);
+  const [businessData, setBusinessData] = useState(null);
+  const [itemData, setItemData] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(null);
   const navigation = useNavigation();
 
 
   // Función para mostrar modal de opciones
-  function openModalWithId(businessId, businessName) {
-    setCurrentBusinessId(businessId);
-    setCurrentBusinessName(businessName);
+  function openModalWithId(itemId, itemName) {
+    setCurrentItemId(itemId);
+    setCurrentItemName(itemName);
     setModalVisible(true);
   }
 
   // Función para la visualización
   function handleView() {
     setModalVisible(false);
-    navigation.navigate('NegocioEspecif', { id: currentBusinessId, edit: false });
+    navigation.navigate('ItemView', { id: currentItemId, edit: false });
   }
 
   // Funciones para la edición
   function handleEdit() {
     setModalVisible(false);
-    navigation.navigate('NegocioEspecif', { id: currentBusinessId, edit: true });
+    navigation.navigate('ItemEdit', { id: currentItemId, edit: true });
   }
 
   // Función para eliminar boton
   function handleDelete() {
     setModalVisible(false);
     // Implementar la lógica de eliminación aquí
-    console.log('Eliminar negocio con ID:', currentBusinessId);
+    console.log('Eliminar negocio con ID:', currentItemId);
   }
 
   // Función para hacer la solicitud con encabezado
@@ -56,21 +55,22 @@ function NegocioScreen() {
         token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.G_SwrKpXhr33H0xf-R6nQfIhUTA0Kd8vkJh5FEKXPLM';
         userId =  '65f3a9dd8ffad84cd731ff20'
       }
-
-      console.log(token)
-      console.log(userId)
-      const response = await axios.get(`http://192.168.100.11:3000/negocio/user/${userId}`, {
+      const response = await axios.get(`http://192.168.100.11:3000/negocio/${businessId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (response.data && response.data.length > 0) {
-        setData(response.data);
+      if (response.data) {
+        setBusinessData(response.data.negocio);
+        if(response.data.negocio.items)
+          {
+            setItemData(response.data.negocio.items);
+          }
       } else {
-        setError('No hay negocios creados aún');
+        setError('Error al consultar el negocio');
       }
     } catch (err) {
-      setError('Error al cargar los negocios: ' + err.message);
+      setError('Error al cargar el negocio: ' + err.message);
     } finally {
       setLoading(false);
     }
@@ -81,31 +81,27 @@ function NegocioScreen() {
     if (isFocused) {
     fetchData();
     }
-  }, [userId || isFocused]);
+  }, [businessId || isFocused]);
 
   return (
     
     <View>
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
-        {/* Textos para confirmar Secure Store */}
-      {/* <Text>ID ALMACENADO: {userId}</Text>
-      <Text>TOKEN ALMACENADO: {token}</Text> */}
-      <Text style = {styles.text}>Negocios creados</Text>
-      {/* <Text style = {styles.text}>Negocio id: {currentBusinessId}</Text> */}
-      {data && data.map((negocio, index) => (
+      <Text style = {styles.text}>Negocio nombre: </Text>
+      {itemData && itemData.map((item, index) => (
       
-        <ContainerNegocio
+        <ContainerItem
           key={index}
-          photo={negocio.photo}
-          business_name={negocio.business_name}
-          description={negocio.description}
+          photo={item.photo}
+          name={item.name}
+          description={item.description}
           editar={true}
-          onEditPress={() => openModalWithId(negocio._id, negocio.business_name)}
+          onEditPress={() => openModalWithId(item._id, item.name)}
         />
       ))}
     </ScrollView>
     <ActionModal
-    name={currentBusinessName}
+    name={currentItemName}
     visible={isModalVisible}
     onClose={() => setModalVisible(false)}
     onEdit={handleEdit}
@@ -143,5 +139,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NegocioScreen;
-
+export default NegocioEspecifScreen;
