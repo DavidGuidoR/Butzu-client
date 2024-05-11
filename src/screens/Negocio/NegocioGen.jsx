@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Text, StyleSheet, ScrollView, View, Image} from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import * as SecureStore from 'expo-secure-store';
-import ActionModal from '../../components/Negocio/ModalNegocio';
+import ActionModal from '@components/Negocio/ModalNegocio';
 import axios from 'axios';
-import ContainerItem from '../../components/ContainerItem';
+import ContainerItem from '@components/ContainerItem';
 
 function NegocioEspecifScreen({ route}) {
   const {id: businessId, edit } = route.params;

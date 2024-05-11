@@ -2,9 +2,9 @@
 import React from 'react';
 import { View, Text, Modal, Button, StyleSheet, TouchableOpacity, Image} from 'react-native';
 
-const editIcon = require('../../../assets/pen.png'); // Asegúrate de tener estos iconos
-const deleteIcon = require('../../../assets/trash-can.png');
-const viewIcon = require('../../../assets/eye.png');
+const editIcon = require('@assets/pen.png'); // Asegúrate de tener estos iconos
+const deleteIcon = require('@assets/trash-can.png');
+const viewIcon = require('@assets/eye.png');
 
 export default function ActionModal({ visible, onClose, onEdit, onDelete, onView, name }) {
   return (

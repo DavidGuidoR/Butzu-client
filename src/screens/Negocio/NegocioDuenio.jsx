@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Text, StyleSheet, ScrollView, View, Image} from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import * as SecureStore from 'expo-secure-store';
-import ContainerNegocio from '../../components/Negocio/ContainerNegocio';
-import ActionModal from '../../components/Negocio/ModalNegocio';
+import ContainerNegocio from '@components/Negocio/ContainerNegocio';
+import ActionModal from '@components/Negocio/ModalNegocio';
 import axios from 'axios';
+import Constants from 'expo-constants';
+const apiUrl = Constants.expoConfig.extra.API_URL;
 
 function NegocioScreen() {
   const isFocused = useIsFocused();
@@ -58,7 +60,7 @@ function NegocioScreen() {
 
       console.log(token)
       console.log(userId)
-      const response = await axios.get(`http://192.168.100.10:3000/negocio/user/${userId}`, {
+      const response = await axios.get(apiUrl + `negocio/user/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

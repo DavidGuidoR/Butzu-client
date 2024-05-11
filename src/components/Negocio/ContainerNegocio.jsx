@@ -6,13 +6,14 @@ import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity } from 'rea
 const screenWidth = Dimensions.get('window').width;
 
 // Importa la imagen local de tres puntos
-const mostrarMas = require('../../../assets/mostrar-mas-boton.png');
+const mostrarMas = require('@assets/mostrar-mas-boton.png');
+const noImage = require('@assets/no-image.png');
 
 const MiComponente = ({ photo, business_name, description, editar, onEditPress }) => {
   return (
     <View style={styles.container}>
       <Image 
-        source={photo ? { uri: photo } : require('../../../assets/no-image.png')}
+        source={photo ? { uri: photo } : noImage}
         style={styles.image}
       />
       <View style={styles.textContainer}>

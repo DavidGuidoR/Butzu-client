@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-buttonPlus = require('../../../assets/plus-button.png')
+buttonPlus = require('@assets/plus-button.png')
 
 export default function ButtonCreate() {
 

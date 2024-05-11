@@ -1,10 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet, TextInput, ImageBackground, TouchableOpacity } from 'react-native';
+const hamburguesaImg = require('@assets/hamburguesa.png');
 
 function CreateUserScreen() {
     return (
         <ImageBackground
-            source={require('../../assets/hamburguesa.png')}
+            source={hamburguesaImg}
             style={styles.background}
             resizeMode="contain"
         >

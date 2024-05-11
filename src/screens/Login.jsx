@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, TextInput, ImageBackground, StyleSheet, TouchableOpacity, Image, Text} from 'react-native';
-import backgroundImage from '../../assets/ropa.png';
-import googleLogo from '../../assets/google.png'; // Ruta al logo de Google
-import facebookLogo from '../../assets/facebook.png'; // Ruta al logo de Facebook
+import backgroundImage from '@assets/ropa.png';
+import googleLogo from '@assets/google.png'; // Ruta al logo de Google
+import facebookLogo from '@assets/facebook.png'; // Ruta al logo de Facebook
 
 function LoginScreen() {
     return (

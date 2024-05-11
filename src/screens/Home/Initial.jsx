@@ -1,7 +1,7 @@
 import React from 'react';
 import { ImageBackground, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import backgroundImage from '../../../assets/pizza.png';
+import backgroundImage from '@assets/pizza.png';
 
 function InitialScreen() {
     const navigation = useNavigation();  // Obtener el objeto de navegación

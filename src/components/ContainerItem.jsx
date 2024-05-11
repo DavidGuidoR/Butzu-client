@@ -2,8 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity } from 'react-native';
 
 // Importa las imagenes por defecto
-const mostrarMas = require('../../assets/mostrar-mas-boton.png');
-const noImage = require('../../assets/no-image.png')
+const mostrarMas = require('@assets/mostrar-mas-boton.png');
+const noImage = require('@assets/no-image.png')
 // Obtén el ancho de la pantalla
 const screenWidth = Dimensions.get('window').width;
 
