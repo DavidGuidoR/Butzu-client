@@ -15,19 +15,28 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.guidodr.Butzuclient"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.guidodr.Butzuclient"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-secure-store"
-    ]
+    ],
+    "extra": {
+      "API_URL": "http://192.168.100.10:3000/",
+      "eas": {
+        "projectId": "4f2f2682-106a-48ec-8189-650eafa1d55b"
+      }
+    },
+    "owner": "guidodr"
   }
 }
