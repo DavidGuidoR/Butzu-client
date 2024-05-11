@@ -55,7 +55,7 @@ function NegocioEspecifScreen({ route}) {
         token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.G_SwrKpXhr33H0xf-R6nQfIhUTA0Kd8vkJh5FEKXPLM';
         userId =  '65f3a9dd8ffad84cd731ff20'
       }
-      const response = await axios.get(`http://192.168.100.11:3000/negocio/${businessId}`, {
+      const response = await axios.get(`http://192.168.100.10:3000/negocio/${businessId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

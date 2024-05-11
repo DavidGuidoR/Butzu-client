@@ -9,7 +9,7 @@ const MiComponente = ({ photo, business_name, description }) => {
   return (
     <View style={styles.container}>
       <Image 
-        source={{ uri: photo || '../assets/no-image.png'}} // Reemplaza con el path de tu imagen
+        source={{ uri: photo || '../../../assets/no-image.png'}} // Reemplaza con el path de tu imagen
         style={styles.image}
       />
       <View style={styles.textContainer}>

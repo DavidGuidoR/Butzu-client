@@ -8,7 +8,7 @@ function HomeScreen() {
   const [negocios, setNegocios] = useState([]);
 
   useEffect(() => {
-    fetch('http://192.168.100.11:3000/negocio/')
+    fetch('http://192.168.100.10:3000/negocio/')
       .then(response => response.json())
       .then(data => setNegocios(data))
       .catch(error => console.error('Error fetching data:', error));

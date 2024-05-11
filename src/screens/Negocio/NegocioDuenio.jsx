@@ -58,7 +58,7 @@ function NegocioScreen() {
 
       console.log(token)
       console.log(userId)
-      const response = await axios.get(`http://192.168.100.11:3000/negocio/user/${userId}`, {
+      const response = await axios.get(`http://192.168.100.10:3000/negocio/user/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
