@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Text, StyleSheet, ScrollView, View, Image} from 'react-native';
+import { Text, StyleSheet, ScrollView, View, Image, TouchableOpacity} from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import * as SecureStore from 'expo-secure-store';
 import ActionModal from '@components/Negocio/ModalNegocio';
 import axios from 'axios';
 import ContainerItem from '@components/ContainerItem';
+import Constants from 'expo-constants';
+import noImage from '@assets/no-image.png';
+import editImage from '@assets/penEdit.png'
+import { Button } from 'react-native-web';
+const apiUrl = Constants.expoConfig.extra.API_URL;
+
 
 function NegocioEspecifScreen({ route}) {
   const {id: businessId, edit } = route.params;
@@ -15,7 +21,7 @@ function NegocioEspecifScreen({ route}) {
   const [businessData, setBusinessData] = useState(null);
   const [itemData, setItemData] = useState(null);
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
 
 
@@ -55,7 +61,7 @@ function NegocioEspecifScreen({ route}) {
         token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.G_SwrKpXhr33H0xf-R6nQfIhUTA0Kd8vkJh5FEKXPLM';
         userId =  '65f3a9dd8ffad84cd731ff20'
       }
-      const response = await axios.get(`http://192.168.100.10:3000/negocio/${businessId}`, {
+      const response = await axios.get(apiUrl +`negocio/${businessId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -69,11 +75,11 @@ function NegocioEspecifScreen({ route}) {
       } else {
         setError('Error al consultar el negocio');
       }
+      setLoading(false);
     } catch (err) {
       setError('Error al cargar el negocio: ' + err.message);
-    } finally {
       setLoading(false);
-    }
+    } 
   };
 
   // Se ejecuta en cada renderizado
@@ -81,13 +87,31 @@ function NegocioEspecifScreen({ route}) {
     if (isFocused) {
     fetchData();
     }
-  }, [businessId || isFocused]);
+  }, [businessId, isFocused]);
 
   return (
     
     <View>
+       {loading ? (
+      <Text>Cargando datos, por favor espere...</Text>
+    ) : (
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
-      <Text style = {styles.text}>Negocio nombre: </Text>
+      <Image
+        source={{uri: businessData.banner}}
+        style={styles.imageBanner}
+        resizeMode="stretch"/>
+      <View
+        style={styles.viewTitle}>
+        <Image
+          source={{uri:businessData.photo}}
+          style={styles.imageLogo}/>
+        <Text style = {styles.textName}>{businessData.business_name}</Text>
+        <TouchableOpacity>
+            <Image
+              source={editImage}
+              style={{width:20, height:20}}/>
+          </TouchableOpacity>
+      </View>
       {itemData && itemData.map((item, index) => (
       
         <ContainerItem
@@ -100,6 +124,7 @@ function NegocioEspecifScreen({ route}) {
         />
       ))}
     </ScrollView>
+    )}
     <ActionModal
     name={currentItemName}
     visible={isModalVisible}
@@ -121,21 +146,29 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     width: '100%',
-    marginVertical: 20,
   },
-  view: {
-
+  viewTitle: {
+    justifyContent:'flex-start',
+    flexDirection: 'row',
+    marginVertical: 10,
+    marginHorizontal:30,
+    alignItems: 'center',
   },
-  text: {
+  imageBanner: {
+    width: '100%',
+    aspectRatio: 7/3,
+    marginBottom:10
+  },
+  imageLogo: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+  },
+  textName: {
     fontFamily: 'monospace',
     fontSize: 20,
-    fontWeight: 'bold',
-    marginHorizontal: 10,
-    borderBottomWidth: 2,
-    borderBottomColor: 'grey', 
-    paddingBottom: 5,
-    marginHorizontal: 25,
-    color: '#5b5b5b'
+    color: '#5b5b5b',
+    marginHorizontal:15
   },
 });
 
