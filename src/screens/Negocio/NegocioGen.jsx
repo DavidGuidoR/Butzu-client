@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, StyleSheet, ScrollView, View, Image, TouchableOpacity} from 'react-native';
+import { Text, StyleSheet, ScrollView, View, Image, TouchableOpacity, Dimensions} from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import * as SecureStore from 'expo-secure-store';
 import ActionModal from '@components/Negocio/ModalNegocio';
@@ -10,6 +10,7 @@ import noImage from '@assets/no-image.png';
 import editImage from '@assets/penEdit.png'
 import { Button } from 'react-native-web';
 const apiUrl = Constants.expoConfig.extra.API_URL;
+const screenWidth = Dimensions.get('window').width;
 
 
 function NegocioEspecifScreen({ route}) {
@@ -110,7 +111,25 @@ function NegocioEspecifScreen({ route}) {
             <Image
               source={editImage}
               style={{width:20, height:20}}/>
+        </TouchableOpacity>
+      </View>
+      <View
+        style={{flex:1, justifyContent: 'center', flexDirection: 'row'}}>
+        <Text
+          style={styles.textDescription}>
+            {businessData.description}
+        </Text>
+        <TouchableOpacity>
+            <Image
+              source={editImage}
+              style={{width:20, height:20}}/>
           </TouchableOpacity>
+      </View>
+      <View
+        style={styles.viewAgregar}>
+        <TouchableOpacity>
+          <Text>Agregar Producto</Text>
+        </TouchableOpacity>
       </View>
       {itemData && itemData.map((item, index) => (
       
@@ -148,11 +167,24 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   viewTitle: {
-    justifyContent:'flex-start',
+    flex:1,
+    width: screenWidth - 40,
+    flexWrap: 'wrap',
+    justifyContent:'center',
     flexDirection: 'row',
     marginVertical: 10,
-    marginHorizontal:30,
     alignItems: 'center',
+    padding: 'auto'
+  },
+  viewAgregar: {
+    flex:1,
+    width: screenWidth - 40,
+    flexWrap: 'wrap',
+    justifyContent:'flex-end',
+    flexDirection: 'row',
+    marginVertical: 10,
+    alignItems: 'center',
+    padding: 'auto'
   },
   imageBanner: {
     width: '100%',
@@ -167,6 +199,12 @@ const styles = StyleSheet.create({
   textName: {
     fontFamily: 'monospace',
     fontSize: 20,
+    color: '#5b5b5b',
+    marginHorizontal:15
+  },
+  textDescription: {
+    fontFamily: 'monospace',
+    fontSize: 15,
     color: '#5b5b5b',
     marginHorizontal:15
   },
