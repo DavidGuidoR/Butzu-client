@@ -5,9 +5,15 @@ import * as SecureStore from 'expo-secure-store';
 import ActionModal from '@components/Negocio/ModalNegocio';
 import axios from 'axios';
 import ContainerItem from '@components/ContainerItem';
+import EditModal from '@components/Negocio/ModalEditNegocio';
 import Constants from 'expo-constants';
 import noImage from '@assets/no-image.png';
-import editImage from '@assets/penEdit.png'
+import editImage from '@assets/penEdit.png';
+import editImageWhite from '@assets/pen-edit-white.png';
+import plusAdd from '@assets/plus-square.png';
+import tickButton from '@assets/tick-button.png';
+import qrButton from '@assets/QR.png';
+import pdfButton from '@assets/docs.png';
 import { Button } from 'react-native-web';
 const apiUrl = Constants.expoConfig.extra.API_URL;
 const screenWidth = Dimensions.get('window').width;
@@ -24,13 +30,52 @@ function NegocioEspecifScreen({ route}) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [editValue, setEditValue] = useState('');
+  const [editField, setEditField] = useState('');
 
 
-  // Función para mostrar modal de opciones
+  function openEditModal(field) {
+    setEditField(field);
+    console.log(field);
+    setEditValue(businessData[field]);
+    setEditModalVisible(true);
+  }
+
+  function applyLocalChanges() {
+    setBusinessData(prevData => ({
+      ...prevData,
+      [editField]: editValue
+    }));
+    setEditModalVisible(false);
+  }
+  
+  async function confirmEdits() {
+    const token = await SecureStore.getItemAsync('auth_token');
+    const headers = { Authorization: `Bearer ${token}` };
+    const body = { [editField]: businessData[editField] };
+    
+    try {
+      await axios.patch(`${apiUrl}negocio/${businessId}`, body, { headers });
+      console.log('Negocio actualizado correctamente');
+    } catch (error) {
+      console.error('Error actualizando el negocio:', error);
+    }
+  }
+  
+
   function openModalWithId(itemId, itemName) {
     setCurrentItemId(itemId);
     setCurrentItemName(itemName);
     setModalVisible(true);
+  }
+
+  function generatePDF() {
+    console.log('boton PDF presionado');
+  }
+
+  function generateQR() {
+    console.log('boton QR presionado');
   }
 
   // Función para la visualización
@@ -88,7 +133,7 @@ function NegocioEspecifScreen({ route}) {
     if (isFocused) {
     fetchData();
     }
-  }, [businessId, isFocused]);
+  }, [businessId, isFocused, edit]);
 
   return (
     
@@ -97,21 +142,47 @@ function NegocioEspecifScreen({ route}) {
       <Text>Cargando datos, por favor espere...</Text>
     ) : (
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
-      <Image
-        source={{uri: businessData.banner}}
-        style={styles.imageBanner}
-        resizeMode="stretch"/>
+      <View>
+        <Image
+          source={{uri: businessData.banner}}
+          style={styles.imageBanner}
+          resizeMode="stretch"/>
+        {edit ? (
+        <TouchableOpacity
+          style={{position: 'absolute', bottom: 20, right: 20 }}
+          onPress={() => openEditModal('banner')}
+         >
+            <Image
+              source={editImageWhite}
+              style={{width:30, height:35}}/>
+        </TouchableOpacity>): null}
+      </View>
       <View
         style={styles.viewTitle}>
-        <Image
-          source={{uri:businessData.photo}}
-          style={styles.imageLogo}/>
+        <View>
+          <Image
+            source={{uri:businessData.photo}}
+            style={styles.imageLogo}/>
+            {edit ? (
+        <TouchableOpacity
+          style={{position: 'absolute', bottom: 5, right:5 }}
+          onPress={() => openEditModal('photo')}
+          >
+            <Image
+              source={editImageWhite}
+              style={{width:20, height:20}}/>
+        </TouchableOpacity>): null}
+        </View>
         <Text style = {styles.textName}>{businessData.business_name}</Text>
-        <TouchableOpacity>
+        {edit ? (
+        <TouchableOpacity
+          onPress={() => openEditModal('business_name')}
+          >
             <Image
               source={editImage}
-              style={{width:20, height:20}}/>
-        </TouchableOpacity>
+              style={{width:20, height:20}}
+              />
+        </TouchableOpacity>): null}
       </View>
       <View
         style={{flex:1, justifyContent: 'center', flexDirection: 'row'}}>
@@ -119,18 +190,26 @@ function NegocioEspecifScreen({ route}) {
           style={styles.textDescription}>
             {businessData.description}
         </Text>
-        <TouchableOpacity>
+        {edit ? (
+        <TouchableOpacity
+          onPress={() => openEditModal('description')}
+          >
             <Image
               source={editImage}
               style={{width:20, height:20}}/>
-          </TouchableOpacity>
+          </TouchableOpacity>): null}
       </View>
+      {edit ? (
       <View
         style={styles.viewAgregar}>
-        <TouchableOpacity>
+        <TouchableOpacity
+          style={{flexDirection: 'row'}}>
+          <Image
+            source={plusAdd}
+            style={{width:20, height:20, marginHorizontal:10}}/>
           <Text>Agregar Producto</Text>
         </TouchableOpacity>
-      </View>
+      </View>): null}
       {itemData && itemData.map((item, index) => (
       
         <ContainerItem
@@ -138,12 +217,14 @@ function NegocioEspecifScreen({ route}) {
           photo={item.photo}
           name={item.name}
           description={item.description}
+          price = {item.price}
           editar={true}
           onEditPress={() => openModalWithId(item._id, item.name)}
         />
       ))}
     </ScrollView>
     )}
+    
     <ActionModal
     name={currentItemName}
     visible={isModalVisible}
@@ -152,7 +233,41 @@ function NegocioEspecifScreen({ route}) {
     onDelete={handleDelete}
     onView={handleView}
   />
-  
+
+    <EditModal
+      visible={editModalVisible}
+      onClose={() => setEditModalVisible(false)}
+      field={editField}
+      value={editValue}
+      onChange={setEditValue}
+      onSave={applyLocalChanges}
+    />
+  {edit ? (
+  <View
+        style={{flex:1, flexDirection: 'row', justifyContent:'flex-end', alignItems: 'center', position: 'absolute', bottom: 20, right: 20 }}>
+        <TouchableOpacity
+          style={styles.touchableWhiteButton}>
+              <Image
+                source={qrButton}
+                style={styles.buttonQr}
+                />
+            </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.touchableWhiteButton}>
+              <Image
+                source={pdfButton}
+                style={styles.buttonPDF}
+                resizeMode="contain"/>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={confirmEdits}
+              >
+              <Image
+                source={tickButton}
+                style={styles.buttonConfirm}/>
+            </TouchableOpacity>
+        </View>
+        ): null}
   </View>
   );
 }
@@ -161,7 +276,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    justifyContent: 'center', // Centrado vertical del contenedor principal
+    justifyContent: 'center',
   },
   scrollView: {
     width: '100%',
@@ -178,11 +293,11 @@ const styles = StyleSheet.create({
   },
   viewAgregar: {
     flex:1,
-    width: screenWidth - 40,
+    width: screenWidth - 30,
     flexWrap: 'wrap',
     justifyContent:'flex-end',
     flexDirection: 'row',
-    marginVertical: 10,
+    marginTop: 20,
     alignItems: 'center',
     padding: 'auto'
   },
@@ -208,6 +323,33 @@ const styles = StyleSheet.create({
     color: '#5b5b5b',
     marginHorizontal:15
   },
+  buttonQr:{
+    width: 30,
+    height: 30,
+  },
+  buttonPDF:{
+    width: 30,
+    height: 30,  
+  },
+  touchableWhiteButton:{
+    width: 60,
+    height: 60,
+    marginLeft:20,
+    backgroundColor: 'white',
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 8,              
+  },
+  buttonConfirm:{
+    width: 60,
+    height: 60,
+    marginLeft:20, 
+  }  
 });
 
 export default NegocioEspecifScreen;
