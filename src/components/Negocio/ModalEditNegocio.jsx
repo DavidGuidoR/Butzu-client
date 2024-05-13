@@ -1,27 +1,92 @@
-import { Modal, View, Text, TextInput, Button, ImagePicker } from 'react-native';
+import React from 'react';
+import { Modal, View, Text, TextInput, Button, TouchableOpacity, StyleSheet } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import { Ionicons } from '@expo/vector-icons';
 
 const EditModal = ({ visible, onClose, field, value, onChange, onSave }) => {
+  const isText = field === 'description' || field === 'business_name';
+
+  const handleImageSelection = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      alert('Sorry, we need camera roll permissions to make this work!');
+      return;
+    }
+
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.cancelled) {
+      onChange(result.uri);  // Assumimos que `onChange` actualiza el estado con la nueva URL de la imagen
+    }
+  };
+
   return (
     <Modal
       animationType="slide"
-      transparent={false}
+      transparent={true}
       visible={visible}
       onRequestClose={onClose}
     >
-      <View style={{ marginTop: 22 }}>
-        <View>
-          <Text>Edit {field}</Text>
-          {field === 'banner' ? (
-            <Button title="Select Image" onPress={() => {/* Implement image selection */}} />
+      <View style={styles.modalContainer}>
+        <View style={styles.modalContent}>
+          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+            <Ionicons name="close-circle" size={30} color="red" />
+          </TouchableOpacity>
+          <Text style={styles.modalTitle}>Edit {field}</Text>
+          {isText ? (
+            <TextInput 
+              style={styles.textInput}
+              value={value} 
+              onChangeText={onChange}
+              placeholder={`Enter new ${field}`}
+            />
           ) : (
-            <TextInput value={value} onChangeText={onChange} />
+            <Button title="Select Image" onPress={handleImageSelection} />
           )}
           <Button title="Save" onPress={onSave} />
-          <Button title="Close" onPress={onClose} />
         </View>
       </View>
     </Modal>
   );
-}
+};
+
+const styles = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    width: '80%',
+    padding: 20,
+    borderRadius: 10,
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+  },
+  modalTitle: {
+    fontSize: 20,
+    marginBottom: 15,
+    textAlign: 'center'
+  },
+  textInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    marginBottom: 15,
+  }
+});
 
 export default EditModal;
