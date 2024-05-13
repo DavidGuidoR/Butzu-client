@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@expo/metro-runtime": "~3.2.1",
-    "@expo/vector-icons": "^14.0.1",
+    "@expo/vector-icons": "^14.0.0",
     "@react-native-community/geolocation": "^3.2.1",
     "@react-navigation/drawer": "^6.6.15",
     "@react-navigation/native": "^6.1.17",
@@ -36,7 +36,7 @@
     "react-dom": "18.2.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.24.0"
   },
   "private": true
 }
