@@ -9,6 +9,17 @@ const apiUrl = Constants.expoConfig.extra.API_URL;
 
 function HomeScreen() {
   const [negocios, setNegocios] = useState([]);
+  const [filtroTexto, setFiltroTexto] = useState('');
+
+  const filtrarNegocios = (texto) => {
+    setFiltroTexto(texto);
+  };
+
+  const negociosFiltrados = filtroTexto
+    ? negocios.filter(negocio =>
+        negocio.business_name.toLowerCase().includes(filtroTexto.toLowerCase())
+      )
+    : negocios;
 
   useEffect(() => {
     fetch(apiUrl + 'negocio/')
@@ -20,13 +31,17 @@ function HomeScreen() {
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        <BarraDeBusqueda/>
-        <View style={styles.container2}>
-          <Mapa style={styles.map}/>
-        </View>
+        <BarraDeBusqueda filtrarNegocios={filtrarNegocios} />
         
+        {/* Se muestra el mapa solo si no hay texto en la barra de búsqueda */}
+        {!filtroTexto && (
+          <View style={styles.container2}>
+            <Mapa style={styles.map}/>
+          </View>
+        )}
+
         <View style={styles.container}>
-          {negocios.map(negocio => (
+          {negociosFiltrados.map(negocio => (
             <MiComponente
               key={negocio._id} 
               photo={negocio.photo}
