@@ -9,7 +9,7 @@ const EditModal = ({ visible, onClose, field, value, onChange, onSave }) => {
   const handleImageSelection = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      alert('Sorry, we need camera roll permissions to make this work!');
+      alert('Se necesitan activar los permisos para acceder a esta funcion');
       return;
     }
 
@@ -20,8 +20,8 @@ const EditModal = ({ visible, onClose, field, value, onChange, onSave }) => {
       quality: 1,
     });
 
-    if (!result.cancelled) {
-      onChange(result.uri);  // Assumimos que `onChange` actualiza el estado con la nueva URL de la imagen
+    if (!result.cancelled && result.assets && result.assets.length > 0) {
+      onChange(result.assets[0].uri);
     }
   };
 
@@ -35,7 +35,7 @@ const EditModal = ({ visible, onClose, field, value, onChange, onSave }) => {
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Ionicons name="close-circle" size={30} color="red" />
+             <Text>✖️</Text>
           </TouchableOpacity>
           <Text style={styles.modalTitle}>Edit {field}</Text>
           {isText ? (

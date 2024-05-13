@@ -33,13 +33,23 @@ function NegocioEspecifScreen({ route}) {
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editValue, setEditValue] = useState('');
   const [editField, setEditField] = useState('');
+  const [originalBusinessData, setOriginalBusinessData] = useState(null);
 
 
   function openEditModal(field) {
     setEditField(field);
-    console.log(field);
     setEditValue(businessData[field]);
     setEditModalVisible(true);
+  }
+
+  function getChangedFields() {
+    const changes = {};
+    Object.keys(businessData).forEach(key => {
+      if (businessData[key] !== originalBusinessData[key] && businessData[key] !== undefined) {
+        changes[key] = businessData[key];
+      }
+    });
+    return changes;
   }
 
   function applyLocalChanges() {
@@ -47,21 +57,58 @@ function NegocioEspecifScreen({ route}) {
       ...prevData,
       [editField]: editValue
     }));
+    console.log(editField)
+    console.log(editValue)
     setEditModalVisible(false);
   }
   
   async function confirmEdits() {
+    const formData = new FormData();
+    const metadata = {};
+  
+    // Función para añadir imágenes al FormData
+    function appendImage(key, imageUrl) {
+      if (!imageUrl) return;
+  
+      const imageName = imageUrl.split('/').pop();  // Extrae el nombre del archivo de la URL
+      const imageType = `image/${imageName.split('.').pop()}`;  // Extrae la extensión y la convierte en un tipo MIME
+  
+      formData.append('images', {
+        uri: imageUrl,
+        name: imageName,
+        type: imageType
+      });
+  
+      const metadataKey = `${key.charAt(0).toUpperCase() + key.slice(1)}Image`;  // Convierte 'photo' en 'PhotoImage', etc.
+      metadata[metadataKey] = imageName;
+    }
+  
+    // Añade las imágenes y la metadata correspondiente
+    appendImage('profile', businessData.photo);
+    appendImage('banner', businessData.banner);
+    appendImage('background', businessData.background_photo);
+  
+    // Añade la metadata al FormData
+    if (Object.keys(metadata).length > 0) {
+      formData.append('metadata', JSON.stringify(metadata));
+    }
+  
+    // Configuración de Axios
     const token = await SecureStore.getItemAsync('auth_token');
-    const headers = { Authorization: `Bearer ${token}` };
-    const body = { [editField]: businessData[editField] };
-    
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'multipart/form-data'
+    };
+  
+    // Realiza la solicitud PATCH
     try {
-      await axios.patch(`${apiUrl}negocio/${businessId}`, body, { headers });
+      await axios.patch(`${apiUrl}negocio/${businessId}`, formData, { headers });
       console.log('Negocio actualizado correctamente');
     } catch (error) {
       console.error('Error actualizando el negocio:', error);
     }
   }
+  
   
 
   function openModalWithId(itemId, itemName) {
@@ -114,6 +161,8 @@ function NegocioEspecifScreen({ route}) {
       });
       if (response.data) {
         setBusinessData(response.data.negocio);
+        // Guardamos estado inicial para cambios en patch en caso de ser dueño
+        setOriginalBusinessData(response.data.negocio);
         if(response.data.negocio.items)
           {
             setItemData(response.data.negocio.items);
