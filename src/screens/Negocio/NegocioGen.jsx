@@ -63,15 +63,18 @@ function NegocioEspecifScreen({ route}) {
   }
   
   async function confirmEdits() {
+    let hasImages = false;
     const formData = new FormData();
     const metadata = {};
+    const body = getChangedFields();
   
-    // Función para añadir imágenes al FormData
-    function appendImage(key, imageUrl) {
-      if (!imageUrl) return;
+    function appendImage(type, imageUrl) {
+      if (!imageUrl || !body[type]) return;
   
-      const imageName = imageUrl.split('/').pop();  // Extrae el nombre del archivo de la URL
-      const imageType = `image/${imageName.split('.').pop()}`;  // Extrae la extensión y la convierte en un tipo MIME
+      hasImages = true;
+
+      const imageName = imageUrl.split('/').pop();
+      const imageType = `image/${imageName.split('.').pop()}`;
   
       formData.append('images', {
         uri: imageUrl,
@@ -79,33 +82,44 @@ function NegocioEspecifScreen({ route}) {
         type: imageType
       });
   
-      const metadataKey = `${key.charAt(0).toUpperCase() + key.slice(1)}Image`;  // Convierte 'photo' en 'PhotoImage', etc.
-      metadata[metadataKey] = imageName;
+      if (type === 'photo') {
+        metadata.profileImage = imageName;
+      } else if (type === 'banner') {
+        metadata.bannerImage = imageName;
+      } else if (type === 'background_photo') {
+        metadata.backgroundImage = imageName;
+      }
     }
-  
-    // Añade las imágenes y la metadata correspondiente
-    appendImage('profile', businessData.photo);
+
+
+    appendImage('photo', businessData.photo);
     appendImage('banner', businessData.banner);
-    appendImage('background', businessData.background_photo);
+    appendImage('background_photo', businessData.background_photo);
   
-    // Añade la metadata al FormData
     if (Object.keys(metadata).length > 0) {
       formData.append('metadata', JSON.stringify(metadata));
     }
-  
-    // Configuración de Axios
+    Object.keys(body).forEach(key => {
+      if (key !== 'photo' && key !== 'banner' && key !== 'background_photo') {
+        formData.append(key, body[key]);
+      }
+    });
     const token = await SecureStore.getItemAsync('auth_token');
     const headers = {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'multipart/form-data'
     };
   
-    // Realiza la solicitud PATCH
-    try {
-      await axios.patch(`${apiUrl}negocio/${businessId}`, formData, { headers });
-      console.log('Negocio actualizado correctamente');
-    } catch (error) {
-      console.error('Error actualizando el negocio:', error);
+    // Realiza la solicitud PATCH si hay cambios
+    if (hasImages || Object.keys(body).length > 0) {
+      try {
+        await axios.patch(`${apiUrl}negocio/edit/${businessId}`, formData, { headers });
+        console.log('Negocio actualizado correctamente');
+      } catch (error) {
+        console.error('Error actualizando el negocio:', error);
+      }
+    } else {
+      console.log('No hay cambios para actualizar');
     }
   }
   
