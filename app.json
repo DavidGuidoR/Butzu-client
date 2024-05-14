@@ -11,9 +11,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.guidodr.Butzuclient"
@@ -28,11 +26,9 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      "expo-secure-store"
-    ],
+    "plugins": ["expo-secure-store"],
     "extra": {
-      "API_URL": "http://192.168.100.10:3000/",
+      "API_URL": "http://192.168.1.71:3000/",
       "eas": {
         "projectId": "4f2f2682-106a-48ec-8189-650eafa1d55b"
       }
