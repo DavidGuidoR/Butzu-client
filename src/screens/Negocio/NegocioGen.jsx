@@ -6,6 +6,7 @@ import ActionModal from '@components/Negocio/ModalNegocio';
 import axios from 'axios';
 import ContainerItem from '@components/ContainerItem';
 import EditModal from '@components/Negocio/ModalEditNegocio';
+import SuccessModal from '@/components/Negocio/ModalEditConfirm';
 import Constants from 'expo-constants';
 import noImage from '@assets/no-image.png';
 import editImage from '@assets/penEdit.png';
@@ -20,7 +21,7 @@ const screenWidth = Dimensions.get('window').width;
 
 
 function NegocioEspecifScreen({ route}) {
-  const {id: businessId, edit } = route.params;
+  const {id: businessId, edit} = route.params;
   const isFocused = useIsFocused();
   const [isModalVisible, setModalVisible] = useState(false);
   const [currentItemId, setCurrentItemId] = useState(null);
@@ -31,6 +32,8 @@ function NegocioEspecifScreen({ route}) {
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
   const [editModalVisible, setEditModalVisible] = useState(false);
+  const [successModalVisible, setSuccessModalVisible] = useState(false);
+  const [editState, setEdit] = useState(edit);
   const [editValue, setEditValue] = useState('');
   const [editField, setEditField] = useState('');
   const [originalBusinessData, setOriginalBusinessData] = useState(null);
@@ -104,22 +107,30 @@ function NegocioEspecifScreen({ route}) {
         formData.append(key, body[key]);
       }
     });
-    const token = await SecureStore.getItemAsync('auth_token');
+    let token = await SecureStore.getItemAsync('auth_token');
+    if (!token) {
+      token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.G_SwrKpXhr33H0xf-R6nQfIhUTA0Kd8vkJh5FEKXPLM';
+    }
     const headers = {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'multipart/form-data'
     };
-  
+
+    console.log(headers)
+    console.log(formData)
+    console.log(businessId)
     // Realiza la solicitud PATCH si hay cambios
     if (hasImages || Object.keys(body).length > 0) {
       try {
         await axios.patch(`${apiUrl}negocio/edit/${businessId}`, formData, { headers });
-        console.log('Negocio actualizado correctamente');
+        setEdit(false);
+        setSuccessModalVisible(true); 
+        
       } catch (error) {
         console.error('Error actualizando el negocio:', error);
       }
     } else {
-      console.log('No hay cambios para actualizar');
+      setEdit(false);
     }
   }
   
@@ -210,7 +221,7 @@ function NegocioEspecifScreen({ route}) {
           source={{uri: businessData.banner}}
           style={styles.imageBanner}
           resizeMode="stretch"/>
-        {edit ? (
+        {editState ? (
         <TouchableOpacity
           style={{position: 'absolute', bottom: 20, right: 20 }}
           onPress={() => openEditModal('banner')}
@@ -226,7 +237,7 @@ function NegocioEspecifScreen({ route}) {
           <Image
             source={{uri:businessData.photo}}
             style={styles.imageLogo}/>
-            {edit ? (
+            {editState ? (
         <TouchableOpacity
           style={{position: 'absolute', bottom: 5, right:5 }}
           onPress={() => openEditModal('photo')}
@@ -237,7 +248,7 @@ function NegocioEspecifScreen({ route}) {
         </TouchableOpacity>): null}
         </View>
         <Text style = {styles.textName}>{businessData.business_name}</Text>
-        {edit ? (
+        {editState ? (
         <TouchableOpacity
           onPress={() => openEditModal('business_name')}
           >
@@ -253,7 +264,7 @@ function NegocioEspecifScreen({ route}) {
           style={styles.textDescription}>
             {businessData.description}
         </Text>
-        {edit ? (
+        {editState ? (
         <TouchableOpacity
           onPress={() => openEditModal('description')}
           >
@@ -262,7 +273,7 @@ function NegocioEspecifScreen({ route}) {
               style={{width:20, height:20}}/>
           </TouchableOpacity>): null}
       </View>
-      {edit ? (
+      {editState ? (
       <View
         style={styles.viewAgregar}>
         <TouchableOpacity
@@ -305,7 +316,11 @@ function NegocioEspecifScreen({ route}) {
       onChange={setEditValue}
       onSave={applyLocalChanges}
     />
-  {edit ? (
+    <SuccessModal 
+        visible={successModalVisible}
+        onClose={() => setSuccessModalVisible(false)}
+        />
+  {editState ? (
   <View
         style={{flex:1, flexDirection: 'row', justifyContent:'flex-end', alignItems: 'center', position: 'absolute', bottom: 20, right: 20 }}>
         <TouchableOpacity

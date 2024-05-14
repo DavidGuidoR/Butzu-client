@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, View, Text, TextInput, Button, TouchableOpacity, StyleSheet } from 'react-native';
+import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -46,9 +46,20 @@ const EditModal = ({ visible, onClose, field, value, onChange, onSave }) => {
               placeholder={`Enter new ${field}`}
             />
           ) : (
-            <Button title="Select Image" onPress={handleImageSelection} />
+            <>
+            <Image
+              source={{ uri: value }}
+              style={styles.previewImage}
+              resizeMode="contain"
+            />
+            <TouchableOpacity style={styles.saveButton} onPress={handleImageSelection}>
+              <Text style={styles.saveButtonText}>Seleccionar imagen</Text>
+            </TouchableOpacity>
+          </>
           )}
-          <Button title="Save" onPress={onSave} />
+          <TouchableOpacity style={styles.saveButton} onPress={onSave}>
+            <Text style={styles.saveButtonText}>Continuar</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </Modal>
@@ -71,6 +82,11 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
+  previewImage: {
+    width: '100%',
+    height: 200, // Ajusta según sea necesario
+    marginBottom: 10,
+  },
   closeButton: {
     position: 'absolute',
     top: 10,
@@ -86,6 +102,18 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     padding: 10,
     marginBottom: 15,
+  },
+  saveButton: {
+    backgroundColor: 'black',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    marginVertical: 10,
+    borderRadius: 15,
+    alignItems: 'center'
+  },
+  saveButtonText: {
+    color: 'white', // Texto en color blanco
+    fontSize: 16
   }
 });
 

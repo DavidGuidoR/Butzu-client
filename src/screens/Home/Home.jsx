@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, Text} from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Image} from 'react-native';
 import { Mapa } from '@components/ubicacion/Mapa';
 import BarraDeBusqueda from '@components/busqueda/Barra';
 import MiComponente from '@components/Negocio/ContainerNegocio';
 import Constants from 'expo-constants';
+import ButtonCreate from '@/components/Negocio/ButtonCrearNegocio';
+import { useNavigation } from '@react-navigation/native';
+import buttonPlus from '@assets/plus-button.png';
 const apiUrl = Constants.expoConfig.extra.API_URL;
 
 
@@ -16,6 +19,13 @@ function HomeScreen() {
       .then(data => setNegocios(data))
       .catch(error => console.error('Error fetching data:', error));
   }, []);
+
+  const navigation = useNavigation();
+
+    // Función para redirigir a la pantalla de creación
+    const navigateToCreateBusiness = () => {
+      navigation.navigate('CrearNegocio');
+    };
 
   return (
     <View style={styles.container}>
@@ -36,8 +46,12 @@ function HomeScreen() {
           ))}
         </View>
       </ScrollView>
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>+</Text>
+      <TouchableOpacity 
+        style={styles.button}
+        onPress={navigateToCreateBusiness}>
+          <Image
+            source={buttonPlus}  
+            style={styles.buttonText}/>
       </TouchableOpacity>
     </View>
   );
@@ -75,7 +89,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 20,
     right: 20,
-    backgroundColor: 'black',
     borderRadius: 35,
     width: 60,
     height: 60,
@@ -84,6 +97,8 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 32,
+    width: 60,
+    height: 60,
     color: 'white',
     fontWeight: 'bold',
   },
