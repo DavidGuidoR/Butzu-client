@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Text, StyleSheet, ScrollView, View, Image, TouchableOpacity } from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import * as SecureStore from 'expo-secure-store';
-import ActionModal from '@components/Negocio/ModalNegocio';
+import ActionModal from '@/components/Negocio/OptionsModal';
 import axios from 'axios';
 import ContainerItem from '@components/ContainerItem';
 import Constants from 'expo-constants';
@@ -15,7 +15,7 @@ const apiUrl = Constants.expoConfig.extra.API_URL;
 function NegocioEspecifScreen({ route }) {
   const { id: businessId, edit } = route.params;
   const isFocused = useIsFocused();
-  const [isModalVisible, setModalVisible] = useState(false);
+  const [isVisible, setModalVisible] = useState(false);
   const [currentItemId, setCurrentItemId] = useState(null);
   const [currentItemName, setCurrentItemName] = useState(null);
   const [businessData, setBusinessData] = useState(null);
@@ -41,7 +41,10 @@ function NegocioEspecifScreen({ route }) {
   // Funciones para la edición
   function handleEdit() {
     setModalVisible(false);
-    navigation.navigate('EditItem', { id: currentItemId, edit: true });
+    console.log(currentItemId)
+    console.log(currentItemName)
+    console.log(itemData)
+    navigation.navigate('EditItem', { id: currentItemId, name: currentItemName, edit: true });
   }
 
   // Función para eliminar boton
@@ -126,7 +129,7 @@ function NegocioEspecifScreen({ route }) {
       )}
       <ActionModal
         name={currentItemName}
-        visible={isModalVisible}
+        isVisible={isVisible}
         onClose={() => setModalVisible(false)}
         onEdit={handleEdit}
         onDelete={handleDelete}
