@@ -60,7 +60,7 @@ function DrawerNavigator() {
         name="Negocios"
         component={NegocioScreen} />
       <Drawer.Screen
-        name="EditarItem"
+        name="EditItem"
         component={EditItemScreen} />
       <Drawer.Screen
         name="Registro"
