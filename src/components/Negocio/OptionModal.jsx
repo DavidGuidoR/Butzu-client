@@ -5,7 +5,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import DeleteConfirmationModal from '@components/Negocio/DeleteConfirmationModal';
 import { useNavigation } from '@react-navigation/native';
 
-const OptionModal = ({ isVisible, onClose, onEdit, onDelete }) => {
+const OptionModal = ({ isVisible, onClose, onEdit, onDelete, onView, itemId }) => {
+
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const navigation = useNavigation();
 

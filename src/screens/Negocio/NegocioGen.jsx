@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, StyleSheet, ScrollView, View, Image, TouchableOpacity} from 'react-native';
+import { Text, StyleSheet, ScrollView, View, Image, TouchableOpacity } from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import * as SecureStore from 'expo-secure-store';
 import ActionModal from '@components/Negocio/ModalNegocio';
@@ -12,8 +12,8 @@ import { Button } from 'react-native-web';
 const apiUrl = Constants.expoConfig.extra.API_URL;
 
 
-function NegocioEspecifScreen({ route}) {
-  const {id: businessId, edit } = route.params;
+function NegocioEspecifScreen({ route }) {
+  const { id: businessId, edit } = route.params;
   const isFocused = useIsFocused();
   const [isModalVisible, setModalVisible] = useState(false);
   const [currentItemId, setCurrentItemId] = useState(null);
@@ -41,7 +41,7 @@ function NegocioEspecifScreen({ route}) {
   // Funciones para la edición
   function handleEdit() {
     setModalVisible(false);
-    navigation.navigate('ItemEdit', { id: currentItemId, edit: true });
+    navigation.navigate('EditItem', { id: currentItemId, edit: true });
   }
 
   // Función para eliminar boton
@@ -59,19 +59,18 @@ function NegocioEspecifScreen({ route}) {
       let userId = await SecureStore.getItemAsync('auth_id');
       if (!token || !userId) {
         token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.G_SwrKpXhr33H0xf-R6nQfIhUTA0Kd8vkJh5FEKXPLM';
-        userId =  '65f3a9dd8ffad84cd731ff20'
+        userId = '65f3a9dd8ffad84cd731ff20'
       }
-      const response = await axios.get(apiUrl +`negocio/${businessId}`, {
+      const response = await axios.get(apiUrl + `negocio/${businessId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       if (response.data) {
         setBusinessData(response.data.negocio);
-        if(response.data.negocio.items)
-          {
-            setItemData(response.data.negocio.items);
-          }
+        if (response.data.negocio.items) {
+          setItemData(response.data.negocio.items);
+        }
       } else {
         setError('Error al consultar el negocio');
       }
@@ -79,62 +78,62 @@ function NegocioEspecifScreen({ route}) {
     } catch (err) {
       setError('Error al cargar el negocio: ' + err.message);
       setLoading(false);
-    } 
+    }
   };
 
   // Se ejecuta en cada renderizado
   useEffect(() => {
     if (isFocused) {
-    fetchData();
+      fetchData();
     }
   }, [businessId, isFocused]);
 
   return (
-    
+
     <View>
-       {loading ? (
-      <Text>Cargando datos, por favor espere...</Text>
-    ) : (
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
-      <Image
-        source={{uri: businessData.banner}}
-        style={styles.imageBanner}
-        resizeMode="stretch"/>
-      <View
-        style={styles.viewTitle}>
-        <Image
-          source={{uri:businessData.photo}}
-          style={styles.imageLogo}/>
-        <Text style = {styles.textName}>{businessData.business_name}</Text>
-        <TouchableOpacity>
+      {loading ? (
+        <Text>Cargando datos, por favor espere...</Text>
+      ) : (
+        <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
+          <Image
+            source={{ uri: businessData.banner }}
+            style={styles.imageBanner}
+            resizeMode="stretch" />
+          <View
+            style={styles.viewTitle}>
             <Image
-              source={editImage}
-              style={{width:20, height:20}}/>
-          </TouchableOpacity>
-      </View>
-      {itemData && itemData.map((item, index) => (
-      
-        <ContainerItem
-          key={index}
-          photo={item.photo}
-          name={item.name}
-          description={item.description}
-          editar={true}
-          onEditPress={() => openModalWithId(item._id, item.name)}
-        />
-      ))}
-    </ScrollView>
-    )}
-    <ActionModal
-    name={currentItemName}
-    visible={isModalVisible}
-    onClose={() => setModalVisible(false)}
-    onEdit={handleEdit}
-    onDelete={handleDelete}
-    onView={handleView}
-  />
-  
-  </View>
+              source={{ uri: businessData.photo }}
+              style={styles.imageLogo} />
+            <Text style={styles.textName}>{businessData.business_name}</Text>
+            <TouchableOpacity>
+              <Image
+                source={editImage}
+                style={{ width: 20, height: 20 }} />
+            </TouchableOpacity>
+          </View>
+          {itemData && itemData.map((item, index) => (
+
+            <ContainerItem
+              key={index}
+              photo={item.photo}
+              name={item.name}
+              description={item.description}
+              editar={true}
+              onEditPress={() => openModalWithId(item._id, item.name)}
+            />
+          ))}
+        </ScrollView>
+      )}
+      <ActionModal
+        name={currentItemName}
+        visible={isModalVisible}
+        onClose={() => setModalVisible(false)}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        onView={handleView}
+      />
+
+    </View>
   );
 }
 
@@ -148,16 +147,16 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   viewTitle: {
-    justifyContent:'flex-start',
+    justifyContent: 'flex-start',
     flexDirection: 'row',
     marginVertical: 10,
-    marginHorizontal:30,
+    marginHorizontal: 30,
     alignItems: 'center',
   },
   imageBanner: {
     width: '100%',
-    aspectRatio: 7/3,
-    marginBottom:10
+    aspectRatio: 7 / 3,
+    marginBottom: 10
   },
   imageLogo: {
     width: 60,
@@ -168,7 +167,7 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace',
     fontSize: 20,
     color: '#5b5b5b',
-    marginHorizontal:15
+    marginHorizontal: 15
   },
 });
 
