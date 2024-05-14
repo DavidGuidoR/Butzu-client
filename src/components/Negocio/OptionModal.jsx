@@ -10,7 +10,7 @@ const OptionModal = ({ isVisible, onClose, onEdit, onDelete }) => {
   const navigation = useNavigation();
 
   const handleEdit = () => {
-    onEdit(); // Corregir esta línea
+    onEdit(); // Llama a la función onEdit para abrir la pantalla de edición
     navigation.navigate('EditItemScreen');
   };
 
