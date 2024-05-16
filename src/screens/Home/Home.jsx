@@ -1,32 +1,58 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, Text} from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Image} from 'react-native';
 import { Mapa } from '@components/ubicacion/Mapa';
 import BarraDeBusqueda from '@components/busqueda/Barra';
 import MiComponente from '@components/Negocio/ContainerNegocio';
 import Constants from 'expo-constants';
+import ButtonCreate from '@/components/Negocio/ButtonCrearNegocio';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
+import buttonPlus from '@assets/plus-button.png';
 const apiUrl = Constants.expoConfig.extra.API_URL;
 
 
 function HomeScreen() {
   const [negocios, setNegocios] = useState([]);
+  const [filtroTexto, setFiltroTexto] = useState('');
+  const isFocused = useIsFocused();
+
+  const filtrarNegocios = (texto) => {
+    setFiltroTexto(texto);
+  };
+
+  const negociosFiltrados = filtroTexto
+    ? negocios.filter(negocio =>
+        negocio.business_name.toLowerCase().includes(filtroTexto.toLowerCase())
+      )
+    : negocios;
 
   useEffect(() => {
     fetch(apiUrl + 'negocio/')
       .then(response => response.json())
       .then(data => setNegocios(data))
       .catch(error => console.error('Error fetching data:', error));
-  }, []);
+  }, [isFocused]);
+
+  const navigation = useNavigation();
+
+    // Función para redirigir a la pantalla de creación
+    const navigateToCreateBusiness = () => {
+      navigation.navigate('CrearNegocio');
+    };
 
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        <BarraDeBusqueda/>
-        <View style={styles.container2}>
-          <Mapa style={styles.map}/>
-        </View>
+        <BarraDeBusqueda filtrarNegocios={filtrarNegocios} />
         
+        {/* Se muestra el mapa solo si no hay texto en la barra de búsqueda */}
+        {!filtroTexto && (
+          <View style={styles.container2}>
+            <Mapa style={styles.map}/>
+          </View>
+        )}
+
         <View style={styles.container}>
-          {negocios.map(negocio => (
+          {negociosFiltrados.map(negocio => (
             <MiComponente
               key={negocio._id} 
               photo={negocio.photo}
@@ -36,8 +62,12 @@ function HomeScreen() {
           ))}
         </View>
       </ScrollView>
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>+</Text>
+      <TouchableOpacity 
+        style={styles.button}
+        onPress={navigateToCreateBusiness}>
+          <Image
+            source={buttonPlus}  
+            style={styles.buttonText}/>
       </TouchableOpacity>
     </View>
   );
@@ -75,7 +105,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 20,
     right: 20,
-    backgroundColor: 'black',
     borderRadius: 35,
     width: 60,
     height: 60,
@@ -84,6 +113,8 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 32,
+    width: 60,
+    height: 60,
     color: 'white',
     fontWeight: 'bold',
   },

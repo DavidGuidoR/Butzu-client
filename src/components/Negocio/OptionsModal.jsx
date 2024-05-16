@@ -2,29 +2,42 @@ import React, { useState } from 'react';
 import { View, Text, Modal, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import DeleteConfirmationModal from '@components/Negocio/DeleteConfirmationModal';
+import { useNavigation } from '@react-navigation/native';
 
 const ActionModal = ({ isVisible, onClose, onEdit, onDelete, onView, itemId, itemName, itemDescription, itemImg }) => {
-  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false); // Definir estado para controlar la visibilidad del modal de confirmación
+
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const navigation = useNavigation();
+
+  const handleEdit = () => {
+    onEdit(); // Corregir esta línea
+    navigation.navigate('EditItemScreen');
+  };
+
+  const handleDelete = () => {
+    setShowDeleteConfirmation(true);
+  };
+
+  const confirmDelete = () => {
+    onDelete();
+    setShowDeleteConfirmation(false);
+  };
 
   return (
-    <Modal visible={isVisible} onBackdropPress={onClose} transparent={true}>
+    <Modal visible={isVisible} onBackdropPress={onClose}>
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
-          <Text style={styles.title}>{itemId}</Text>
-
           <TouchableOpacity onPress={onEdit} style={styles.button}>
             <Text style={styles.buttonText}>Editar</Text>
             <Icon name="edit" size={20} color="#000" />
           </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => setShowDeleteConfirmation(true)} style={styles.button}> {/* Abrir modal de confirmación de eliminación */}
+          <TouchableOpacity onPress={() => setShowDeleteConfirmation(true)} style={styles.button}>
             <Text style={styles.buttonDeleteText}>Eliminar</Text>
             <Icon name="trash" size={20} color="#f00" />
           </TouchableOpacity>
-
           <DeleteConfirmationModal
             isVisible={showDeleteConfirmation}
-            onClose={() => setShowDeleteConfirmation(false)} // Cerrar modal de confirmación de eliminación
+            onClose={() => setShowDeleteConfirmation(false)}
             onConfirm={onDelete}
           />
         </View>
@@ -42,7 +55,8 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     backgroundColor: 'white',
-    padding: 20,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
     borderRadius: 10,
     width: '80%', // Ancho del modal
     alignItems: 'center',
@@ -58,7 +72,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
-    marginBottom: 10,
+    marginTop: 5,
+    marginBottom: 5,
   },
   buttonText: {
     color: '#000',

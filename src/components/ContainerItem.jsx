@@ -8,16 +8,16 @@ const noImage = require('@assets/no-image.png')
 const screenWidth = Dimensions.get('window').width;
 
 
-const ContainerItem = ({ photo, name, description, editar, onEditPress }) => {
+const ContainerItem = ({ photo, name, description, price, editar, onEditPress }) => {
   return (
     <View style={styles.container}>
       <View style={styles.textContainer}>
         <Text style={styles.title}>{name}</Text>
         <Text style={styles.description}>{description}</Text>
+        <Text style={styles.price}>${price}</Text>
       </View>
       <Image 
-        // source={photo ? { uri: photo } : noImage}
-        source={noImage}
+        source={photo ? { uri: photo } : noImage}
         style={styles.image}
       />
 
@@ -46,12 +46,12 @@ const styles = StyleSheet.create({
     elevation: 5,
     width: screenWidth - 40,
     alignSelf: 'center',
-    height: 120
+    minHeight: 120,
   },
   image: {
     width: 70,
     height: 70,
-    borderRadius: 25,
+    borderRadius: 35,
     marginLeft: 20
   },
   textContainer: {
@@ -61,18 +61,31 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: 'bold',
     fontSize: 22,
-    paddingBottom: 10,
     borderBottomWidth: 2,
     borderBottomColor: 'black',
     borderStyle: 'dashed',
+    paddingBottom: 10, 
+  },
+  descriptionContainer: {
+    maxHeight: 50, 
   },
   description: {
-    marginVertical: 10,
+    paddingTop: 10,
+    fontSize: 14,
+  },
+  price: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#5b5b5b'
   },
   mostrarMas: {
     width: 24,
     height: 24,
   },
+  editButton: {
+    paddingLeft: 10,
+  },
 });
+
 
 export default ContainerItem;
