@@ -6,6 +6,7 @@ const screenWidth = Dimensions.get('window').width;
 import noImage from '@assets/no-image.png';
 import plusImage from '@assets/plus.png';
 import tickButton from '@assets/tick-button.png';
+import ColorPickerWheel from '@/components/pickers/ColorPickerWheel';
 
 const CrearNegocioScreen = () => {
   const [userId, setUserId] = useState('');
@@ -15,7 +16,7 @@ const CrearNegocioScreen = () => {
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [bannerPhoto, setBannerPhoto] = useState(null);
   const [backgroundPhoto, setBackgroundPhoto] = useState(null);
-  const [colorTop, setColorTop] = useState('#FFFFFF');
+  const [colorTop,setColorTop] = useState('');
   const [tagColor, setTagColor] = useState('#FFFFFF');
   const [numExt, setNumExt] = useState('');
   const [numInt, setNumInt] = useState('');
@@ -25,6 +26,7 @@ const CrearNegocioScreen = () => {
   const [country, setCountry] = useState('');
   const [loading, setLoading] = useState(false);
   const [businessData, setBusinessData] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -57,7 +59,10 @@ const CrearNegocioScreen = () => {
     }
   };
 
-  // Add more handlers and methods as needed
+  const onSelectColor = ({ hex }) => {
+    console.log(hex)
+    setColorTop(hex);
+  };
 
   return (
     
@@ -79,7 +84,7 @@ const CrearNegocioScreen = () => {
         </TouchableOpacity>
       </View>
       <View
-        style={styles.viewTitle}>
+        style={[styles.viewTitle, { backgroundColor: colorTop }]}>
         <View>
           <Image
             source={noImage}
@@ -110,6 +115,13 @@ const CrearNegocioScreen = () => {
           underlineColorAndroid="transparent"
         />
         </View>
+        <ColorPickerWheel 
+          onCompleteSelect={onSelectColor}
+          onPressModal={() => setShowModal(true)}
+          showModal={showModal}
+          setShowModal = {() => setShowModal(false)}
+          styleButton={{position: 'absolute', top: 50, right: -10 }}
+        />
       </View>
       <View
         style={{flex:1, justifyContent: 'center', flexDirection: 'column'}}>
@@ -124,15 +136,6 @@ const CrearNegocioScreen = () => {
 
       </View>
     </ScrollView>
-  {/* <View
-        style={{flex:1, flexDirection: 'row', justifyContent:'flex-end', alignItems: 'center', position: 'absolute', bottom: 20, right: 20 }}>
-            <TouchableOpacity
-              >
-              <Image
-                source={tickButton}
-                style={styles.buttonConfirm}/>
-            </TouchableOpacity>
-        </View> */}
   </View>
   );
 }
@@ -156,7 +159,7 @@ const styles = StyleSheet.create({
     padding: 30,
     marginBottom: 10,
     borderBottomWidth: 2,
-    borderBottomColor: 'black',
+    borderBottomColor: 'black'
   },
   viewAgregar: {
     flex:1,
@@ -171,20 +174,22 @@ const styles = StyleSheet.create({
   imageBanner: {
     width: '100%',
     height: 150,
-    marginBottom:10
+    marginBottom:10,
   },
   imageLogo: {
     width: 60,
     height: 60,
     borderRadius: 30,
+    backgroundColor: 'white'
   },
   input: {
     flex: 1,
     height: 40,
+    width: screenWidth * 0.6,
     margin: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: 'gray',
     padding: 10,
+    backgroundColor: 'white',
+    borderRadius: 10
   },
   inputDescription: {
     flex: 1,
