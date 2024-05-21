@@ -4,7 +4,7 @@ import { View, Text, TextInput, StyleSheet } from 'react-native';
 const EditItemScreen = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Campo 1:</Text>
+      <Text style={styles.label}>Nombre:</Text>
       <TextInput
         style={styles.textarea}
         placeholder="Introduce texto aquí"
@@ -12,7 +12,14 @@ const EditItemScreen = () => {
         numberOfLines={4}
       />
 
-      <Text style={styles.label}>Campo 2:</Text>
+      <Text style={styles.label}>Descripción:</Text>
+      <TextInput
+        style={styles.textarea}
+        placeholder="Introduce texto aquí"
+        multiline={true}
+        numberOfLines={4}
+      />
+      <Text style={styles.label}>Precio:</Text>
       <TextInput
         style={styles.textarea}
         placeholder="Introduce texto aquí"
