@@ -34,8 +34,6 @@ export default function EditItemModal({ visible, onClose, onEdit, onDelete, onVi
       isVisible={visible}
       onBackdropPress={onClose}>
       <View style={styles.modalContent}>
-        <Text style={styles.title}>{name}</Text>
-
         <TouchableOpacity style={styles.button} onPress={onEdit}>
           <Text style={styles.buttonText}>Editar</Text>
           <Icon name="edit" size={20} color="#000" />
