@@ -159,6 +159,7 @@ function NegocioEspecifScreen({ route }) {
   // Funciones para la edición
   function handleEdit() {
     setModalVisible(false);
+    console.log(currentItemId)
     navigation.navigate('EditItemScreen', { id: currentItemId, edit: true });
   }
 
@@ -167,6 +168,36 @@ function NegocioEspecifScreen({ route }) {
     setModalVisible(false);
     // Implementar la lógica de eliminación aquí
     console.log('Eliminar negocio con ID:', currentItemId);
+  }
+
+  // ------------ ITEMS -------------
+
+  // Funciones para la edición
+  function handleEditItem() {
+    setModalVisible(false);
+    console.log(currentItemName)
+    console.log(currentItemId)
+    navigation.navigate('EditItemScreen', { id: currentItemId, edit: true });
+  }
+
+  // Función para eliminar boton
+  async function handleDeleteItem() {
+    setModalVisible(false);
+    try {
+      let token = await SecureStore.getItemAsync('auth_token');
+      if (!token) {
+        token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.G_SwrKpXhr33H0xf-R6nQfIhUTA0Kd8vkJh5FEKXPLM';
+      }
+      await axios.delete(`${apiUrl}items/${currentItemId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setItemData(prevItems => prevItems.filter(item => item._id !== currentItemId));
+      console.log('Item eliminado con ID:', currentItemId);
+    } catch (error) {
+      console.error('Error eliminando el item:', error);
+    }
   }
 
   // Función para hacer la solicitud con encabezado
@@ -303,9 +334,8 @@ function NegocioEspecifScreen({ route }) {
         name={currentItemName}
         visible={isModalVisible}
         onClose={() => setModalVisible(false)}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onView={handleView}
+        onEdit={handleEditItem}
+        onDelete={handleDeleteItem}
       />
 
       <EditModal
