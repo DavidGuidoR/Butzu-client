@@ -7,6 +7,7 @@ import noImage from '@assets/no-image.png';
 import plusImage from '@assets/plus.png';
 import tickButton from '@assets/tick-button.png';
 import ColorPickerWheel from '@/components/pickers/ColorPickerWheel';
+import WaveTopColor from '@/vectores/WaveTopColor';
 
 const CrearNegocioScreen = () => {
   const [userId, setUserId] = useState('');
@@ -68,6 +69,7 @@ const CrearNegocioScreen = () => {
     
     <View>
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
+        <WaveTopColor></WaveTopColor>
       <View 
         style={{flex:1, justifyContent: 'center', alignItems: 'center', borderBottomWidth: 2, borderBottomColor: 'black', borderTopWidth: 2, borderTopColor: 'black'}}>
         <Image
