@@ -1,16 +1,55 @@
-import React from 'react';
-import { View, Text, StyleSheet, TextInput, ImageBackground, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TextInput, ImageBackground, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import Constants from 'expo-constants';
 
 function CreateUserScreen() {
-
-    
+    const [nombre, setNombre] = useState('');
+    const [apellidoPaterno, setApellidoPaterno] = useState('');
+    const [apellidoMaterno, setApellidoMaterno] = useState('');
+    const [correo, setCorreo] = useState('');
+    const [telefono, setTelefono] = useState('');
+    const [fechaNacimiento, setFechaNacimiento] = useState('');
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
 
     const handleCancel = () => {
         // Lógica para manejar el evento de cancelar
+        console.log("Registro cancelado");
     };
 
-    const handleSubmit = () => {
-        // Lógica para manejar el evento de enviar
+    const handleSubmit = async () => {
+        console.log("Constants.expoConfig:", Constants.expoConfig);
+        const apiUrl = Constants.expoConfig && Constants.expoConfig.extra ? Constants.expoConfig.extra.API_URL : "http://192.168.1.66:3000/";
+        data = {
+            nombre,
+            apellidoPaterno,
+            apellidoMaterno,
+            correo,
+            telefono,
+            fechaNacimiento,
+            username,
+            password
+        };
+
+        try {
+            const response = await fetch(`${apiUrl}user/createUser`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                Alert.alert('Éxito', result.message);
+            } else {
+                Alert.alert('Error', result.message);
+            }
+        } catch (error) {
+            Alert.alert('Error', 'No se pudo conectar con la API');
+        }
     };
 
     return (
@@ -21,37 +60,77 @@ function CreateUserScreen() {
         >
             <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
                 <View style={styles.container}>
-                    {/* Título de bienvenida */}
                     <Text style={styles.welcomeTitle}>
                         Bienvenido, por favor regístrate
                     </Text>
 
-                    {/* Campos de entrada */}
                     <Text style={styles.label}>Nombre</Text>
-                    <TextInput style={styles.input} placeholder="Nombre" />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Nombre"
+                        value={nombre}
+                        onChangeText={setNombre}
+                    />
 
                     <Text style={styles.label}>Apellido Paterno</Text>
-                    <TextInput style={styles.input} placeholder="Apellido Paterno" />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Apellido Paterno"
+                        value={apellidoPaterno}
+                        onChangeText={setApellidoPaterno}
+                    />
 
                     <Text style={styles.label}>Apellido Materno</Text>
-                    <TextInput style={styles.input} placeholder="Apellido Materno" />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Apellido Materno"
+                        value={apellidoMaterno}
+                        onChangeText={setApellidoMaterno}
+                    />
 
                     <Text style={styles.label}>Correo</Text>
-                    <TextInput style={styles.input} placeholder="Correo" keyboardType="email-address" />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Correo"
+                        keyboardType="email-address"
+                        value={correo}
+                        onChangeText={setCorreo}
+                    />
 
                     <Text style={styles.label}>Teléfono</Text>
-                    <TextInput style={styles.input} placeholder="Teléfono" keyboardType="phone-pad" />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Teléfono"
+                        keyboardType="phone-pad"
+                        value={telefono}
+                        onChangeText={setTelefono}
+                    />
 
                     <Text style={styles.label}>Fecha de Nacimiento</Text>
-                    <TextInput style={styles.input} placeholder="Fecha de Nacimiento" keyboardType="date"/>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Fecha de Nacimiento"
+                        value={fechaNacimiento}
+                        onChangeText={setFechaNacimiento}
+                    />
 
                     <Text style={styles.label}>Username</Text>
-                    <TextInput style={styles.input} placeholder="Username" />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Username"
+                        value={username}
+                        onChangeText={setUsername}
+                    />
 
                     <Text style={styles.label}>Contraseña</Text>
-                    <TextInput style={styles.input} placeholder="Contraseña" secureTextEntry={true} />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Contraseña"
+                        secureTextEntry={true}
+                        value={password}
+                        onChangeText={setPassword}
+                    />
 
-                    {/* Botones */}
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
                             <Text style={styles.buttonText}>Cancelar</Text>
@@ -87,7 +166,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.3,
         shadowRadius: 4,
         backgroundColor: 'rgba(255, 255, 255, 0.8)',
-        marginTop: 30, 
+        marginTop: 30,
     },
     welcomeTitle: {
         fontSize: 22,
