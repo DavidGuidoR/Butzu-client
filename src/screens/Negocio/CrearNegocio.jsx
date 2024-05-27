@@ -123,13 +123,11 @@ const CrearNegocioScreen = () => {
       const imageType = getMimeType(imageUrl);
       
       const filePath = imageUrl.replace('file://', '');
-      const fileStats = await RNFS.stat(filePath);
   
       const imageData = {
         uri: imageUrl,
         name: imageName,
         type: imageType,
-        size: fileStats.size,
       };
   
       formData.append('images', imageData);
