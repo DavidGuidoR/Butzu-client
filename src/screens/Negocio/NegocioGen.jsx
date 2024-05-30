@@ -21,7 +21,7 @@ const screenWidth = Dimensions.get('window').width;
 
 
 function NegocioEspecifScreen({ route}) {
-  const {id: businessId, edit} = route.params;
+  const {id: businessId, edit = false} = route.params;
   const isFocused = useIsFocused();
   const [isModalVisible, setModalVisible] = useState(false);
   const [currentItemId, setCurrentItemId] = useState(null);

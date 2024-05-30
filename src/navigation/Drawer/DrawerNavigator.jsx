@@ -51,11 +51,6 @@ function DrawerNavigator() {
           options={{ drawerItemStyle: { height: 0 } }}
           />
           <Drawer.Screen 
-          name="CrearNegocio" 
-           component={CrearNegocioScreen} 
-          options={{ drawerItemStyle: { height: 0 } }}
-          />
-          <Drawer.Screen 
           name="Negocios" 
           component={NegocioScreen} />
           <Drawer.Screen 
@@ -70,9 +65,12 @@ function AuthStackNavigator() {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Drawer" component={DrawerNavigator} options={{ headerShown: false }} />
-      <Stack.Screen name="Initial" component={InitialScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Initial" component={InitialScreen} />
       <Stack.Screen name="Login" component={LoginScreen}  />
-      <Stack.Screen name="CreateUser" component={CreateUserScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="CreateUser" component={CreateUserScreen} />
+      <Stack.Screen name="CrearNegocio" component={CrearNegocioScreen} />
+      <Stack.Screen name="NegocioEspecif" 
+          component={NegocioEspecif}/>
       <Stack.Screen
           name='EditItemScreen'
           component={EditItemScreen}

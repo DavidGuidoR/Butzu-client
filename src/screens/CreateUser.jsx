@@ -1,6 +1,11 @@
-import React from 'react';
-import { View, Text, StyleSheet, TextInput, ImageBackground, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TextInput, ImageBackground, TouchableOpacity, ScrollView, Alert, Modal, Button } from 'react-native';
+import Constants from 'expo-constants';
+import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
+
 const hamburguesaImg = require('@assets/hamburguesa.png');
+const apiUrl = Constants.expoConfig.extra.API_URL;
 
 function CreateUserScreen() {
     const [nombre, setNombre] = useState('');
@@ -12,43 +17,67 @@ function CreateUserScreen() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
+    const [isSuccessful, setIsSuccessful] = useState(false);
+    const navigation = useNavigation();
+
     const handleCancel = () => {
-        // Lógica para manejar el evento de cancelar
         console.log("Registro cancelado");
     };
 
     const handleSubmit = async () => {
         console.log("Constants.expoConfig:", Constants.expoConfig);
-        const apiUrl = Constants.expoConfig && Constants.expoConfig.extra ? Constants.expoConfig.extra.API_URL : "http://192.168.1.66:3000/";
-        data = {
-            nombre,
-            apellidoPaterno,
-            apellidoMaterno,
-            correo,
-            telefono,
-            fechaNacimiento,
-            username,
-            password
+        
+        const data = {
+            name: nombre,
+            last_name_1: apellidoPaterno,
+            last_name_2: apellidoMaterno,
+            email: correo,
+            phone: telefono,
+            birth_date: fechaNacimiento,
+            username: username,
+            password: password
         };
 
         try {
-            const response = await fetch(`${apiUrl}user/createUser`, {
-                method: 'POST',
+            const response = await axios.post(`${apiUrl}user/createUsers`, data, {
                 headers: {
                     'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
+                }
             });
 
-            const result = await response.json();
-
-            if (response.ok) {
-                Alert.alert('Éxito', result.message);
+            if (response.status === 200) {
+                setIsSuccessful(true);
+                setModalMessage('Registro exitoso');
+                setModalVisible(true);
             } else {
-                Alert.alert('Error', result.message);
+                setIsSuccessful(false);
+                setModalMessage(response.data.message || 'Error desconocido');
+                setModalVisible(true);
             }
         } catch (error) {
-            Alert.alert('Error', 'No se pudo conectar con la API');
+            setIsSuccessful(false);
+            if (error.response) {
+                setModalMessage(error.response.data.message || 'Error en la respuesta de la API');
+                console.error('Error en la respuesta de la API:', error.response.data);
+                console.error('Código de estado:', error.response.status);
+                console.error('Encabezados:', error.response.headers);
+            } else if (error.request) {
+                setModalMessage('Error en la solicitud');
+                console.error('Error en la solicitud:', error.request);
+            } else {
+                setModalMessage('Error al configurar la solicitud');
+                console.error('Error al configurar la solicitud:', error.message);
+            }
+            setModalVisible(true);
+        }
+    };
+
+    const handleModalClose = () => {
+        setModalVisible(false);
+        if (isSuccessful) {
+            navigation.navigate('Home');
         }
     };
 
@@ -142,6 +171,20 @@ function CreateUserScreen() {
                     </View>
                 </View>
             </ScrollView>
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={handleModalClose}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContainer}>
+                        <Text style={styles.modalText}>{modalMessage}</Text>
+                        <Button title="Aceptar" onPress={handleModalClose} />
+                    </View>
+                </View>
+            </Modal>
         </ImageBackground>
     );
 }
@@ -210,6 +253,23 @@ const styles = StyleSheet.create({
     buttonText: {
         color: '#fff',
         fontWeight: 'bold',
+    },
+    modalOverlay: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContainer: {
+        width: '80%',
+        padding: 20,
+        backgroundColor: 'white',
+        borderRadius: 10,
+        alignItems: 'center',
+    },
+    modalText: {
+        fontSize: 18,
+        marginBottom: 20,
     },
 });
 
