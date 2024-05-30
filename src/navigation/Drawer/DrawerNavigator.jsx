@@ -15,6 +15,7 @@ import InitialScreen from '@screens/Home/Initial';
 import EditItemScreen from '@screens/Negocio/EditItemScreen';
 import * as SecureStore from 'expo-secure-store';
 import PrivateRoute from './AuthVerify';
+import CreateItemScreen from '@screens/Negocio/CreateItemScreen';
 
 const ojoImage = require('@assets/ojo.png');
 const Drawer = createDrawerNavigator();
@@ -41,7 +42,7 @@ function CustomDrawerContent(props) {
 function MainStackNavigator({ isAuthenticated }) {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="NegocioEspecif" component={NegocioEspecif} />
+      <Stack.Screen name="NegocioEspecif" component={NegocioEspecif} options={{ headerShown: false }}/>
       <Stack.Screen name="CrearNegocio"> 
         {
           props => <PrivateRoute {...props} 

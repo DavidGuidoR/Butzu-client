@@ -31,31 +31,32 @@ const EditModal = ({ visible, onClose, field, value, onChange, onSave }) => {
       transparent={true}
       visible={visible}
       onRequestClose={onClose}
+      onBackdropPress={onClose}
     >
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-             <Text>✖️</Text>
+            <Text>✖️</Text>
           </TouchableOpacity>
           <Text style={styles.modalTitle}>Edit {field}</Text>
           {isText ? (
-            <TextInput 
+            <TextInput
               style={styles.textInput}
-              value={value} 
+              value={value}
               onChangeText={onChange}
               placeholder={`Enter new ${field}`}
             />
           ) : (
             <>
-            <Image
-              source={{ uri: value }}
-              style={styles.previewImage}
-              resizeMode="contain"
-            />
-            <TouchableOpacity style={styles.saveButton} onPress={handleImageSelection}>
-              <Text style={styles.saveButtonText}>Seleccionar imagen</Text>
-            </TouchableOpacity>
-          </>
+              <Image
+                source={{ uri: value }}
+                style={styles.previewImage}
+                resizeMode="contain"
+              />
+              <TouchableOpacity style={styles.saveButton} onPress={handleImageSelection}>
+                <Text style={styles.saveButtonText}>Seleccionar imagen</Text>
+              </TouchableOpacity>
+            </>
           )}
           <TouchableOpacity style={styles.saveButton} onPress={onSave}>
             <Text style={styles.saveButtonText}>Continuar</Text>

@@ -1,12 +1,11 @@
-// ActionModal.js
 import React from 'react';
-import { View, Text, Modal, Button, StyleSheet, TouchableOpacity, Image} from 'react-native';
+import { View, Text, Modal, TouchableOpacity, Image, StyleSheet } from 'react-native';
 
 const editIcon = require('@assets/pen.png'); // Asegúrate de tener estos iconos
 const deleteIcon = require('@assets/trash-can.png');
 const viewIcon = require('@assets/eye.png');
 
-export default function ActionModal({ visible, onClose, onEdit, onDelete, onView, name }) {
+const ActionModal = ({ visible, onClose, onEdit, onDelete, onView, name }) => {
   return (
     <Modal
       transparent={true}
@@ -16,7 +15,7 @@ export default function ActionModal({ visible, onClose, onEdit, onDelete, onView
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
-        <Text style={styles.title}>{name}</Text>
+          <Text style={styles.title}>{name}</Text>
 
           <TouchableOpacity style={styles.button} onPress={onEdit}>
             <Image source={editIcon} style={styles.icon} />
@@ -37,53 +36,48 @@ export default function ActionModal({ visible, onClose, onEdit, onDelete, onView
             <Text style={styles.closeButtonText}>Cerrar</Text>
           </TouchableOpacity>
         </View>
-      </View> 
+      </View>
     </Modal>
   );
-}
+};
 
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
-    width: 300,
-    padding: 20,
     backgroundColor: 'white',
     borderRadius: 10,
-    elevation: 5,
+    padding: 20,
+    alignItems: 'center',
   },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   button: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
+    marginBottom: 10,
   },
   buttonText: {
     marginLeft: 10,
-    fontSize: 16,
-    color: 'black',
   },
   icon: {
     width: 20,
     height: 20,
   },
   closeButton: {
-    marginTop: 20,
-    alignItems: 'center',
-    paddingVertical: 10,
-    backgroundColor: 'gray',
-    borderRadius: 5,
+    marginTop: 10,
   },
   closeButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  }
+    color: 'blue',
+    fontSize: 16,
+  },
 });
+
+export default ActionModal;

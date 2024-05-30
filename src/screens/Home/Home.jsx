@@ -13,7 +13,8 @@ const apiUrl = Constants.expoConfig.extra.API_URL;
 function HomeScreen() {
   const [negocios, setNegocios] = useState([]);
   const [filtroTexto, setFiltroTexto] = useState('');
-  const isFocused = useIsFocused();
+  const isFocused = useIsFocused();  
+  const navigation = useNavigation();
 
   const filtrarNegocios = (texto) => {
     setFiltroTexto(texto);
@@ -32,11 +33,13 @@ function HomeScreen() {
       .catch(error => console.error('Error fetching data:', error));
   }, [isFocused]);
 
-  const navigation = useNavigation();
-
     // Función para redirigir a la pantalla de creación
     const navigateToCreateBusiness = () => {
       navigation.navigate('Inicio', { screen: 'CrearNegocio'});
+    };
+
+    const navigateToBusiness = (id) => {
+      navigation.navigate('Inicio', { screen: 'NegocioEspecif', params: { id, edit: false } });
     };
 
   return (
@@ -53,12 +56,17 @@ function HomeScreen() {
 
         <View style={styles.container}>
           {negociosFiltrados.map(negocio => (
+            <TouchableOpacity
+            key={negocio._id}
+            onPress={() => navigateToBusiness(negocio._id)}
+          >
             <MiComponente
               key={negocio._id} 
               photo={negocio.photo}
               business_name={negocio.business_name}
               description={negocio.description}
             />
+            </TouchableOpacity>
           ))}
         </View>
       </ScrollView>
