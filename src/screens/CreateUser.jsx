@@ -23,11 +23,10 @@ function CreateUserScreen() {
     const navigation = useNavigation();
 
     const handleCancel = () => {
-        console.log("Registro cancelado");
+        navigation.navigate('Login')
     };
 
     const handleSubmit = async () => {
-        console.log("Constants.expoConfig:", Constants.expoConfig);
         
         const data = {
             name: nombre,
@@ -59,17 +58,8 @@ function CreateUserScreen() {
         } catch (error) {
             setIsSuccessful(false);
             if (error.response) {
-                setModalMessage(error.response.data.message || 'Error en la respuesta de la API');
-                console.error('Error en la respuesta de la API:', error.response.data);
-                console.error('Código de estado:', error.response.status);
-                console.error('Encabezados:', error.response.headers);
-            } else if (error.request) {
-                setModalMessage('Error en la solicitud');
-                console.error('Error en la solicitud:', error.request);
-            } else {
-                setModalMessage('Error al configurar la solicitud');
-                console.error('Error al configurar la solicitud:', error.message);
-            }
+                setModalMessage(`Error al realizar el registro. \n${error.response.data.message}` || 'Error en la respuesta de la API');
+            } 
             setModalVisible(true);
         }
     };

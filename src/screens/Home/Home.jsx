@@ -36,7 +36,7 @@ function HomeScreen() {
 
     // Función para redirigir a la pantalla de creación
     const navigateToCreateBusiness = () => {
-      navigation.navigate('CrearNegocio');
+      navigation.navigate('Inicio', { screen: 'CrearNegocio'});
     };
 
   return (
