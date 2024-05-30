@@ -17,12 +17,22 @@ const EditItemScreen = ({ route, navigation }) => {
   };
 
   return (
-    <View>
+    <View style={styles.container}>
+      <Text style={styles.label}>Nombre:</Text>
       <TextInput
         value={name}
         onChangeText={setName}
         placeholder="Nombre del ítem"
       />
+
+      <Text style={styles.label}>Descripción:</Text>
+      <TextInput
+        style={styles.textarea}
+        placeholder="Introduce texto aquí"
+        multiline={true}
+        numberOfLines={4}
+      />
+      <Text style={styles.label}>Precio:</Text>
       <TextInput
         value={price}
         onChangeText={setPrice}

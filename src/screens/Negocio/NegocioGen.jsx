@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Text, StyleSheet, ScrollView, View, Image, TouchableOpacity, Dimensions } from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import * as SecureStore from 'expo-secure-store';
-import ActionModal from '@/components/Negocio/OptionsModal';
+import EditItemModal from '@components/Negocio/EditItemModal';
 import axios from 'axios';
 import ContainerItem from '@components/ContainerItem';
 import EditModal from '@components/Negocio/ModalEditNegocio';
@@ -16,16 +16,14 @@ import tickButton from '@assets/tick-button.png';
 import qrButton from '@assets/QR.png';
 import pdfButton from '@assets/docs.png';
 import { Button } from 'react-native-web';
+import ProductoModal from '@components/Negocio/ProductoModal';
 const apiUrl = Constants.expoConfig.extra.API_URL;
 const screenWidth = Dimensions.get('window').width;
 
 
 function NegocioEspecifScreen({ route }) {
-
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const { id: businessId, edit } = route.params;
   const isFocused = useIsFocused();
-  const [isVisible, setModalVisible] = useState(false);
   const [currentItemId, setCurrentItemId] = useState(null);
   const [currentItemName, setCurrentItemName] = useState(null);
   const [businessData, setBusinessData] = useState(null);
@@ -39,19 +37,11 @@ function NegocioEspecifScreen({ route }) {
   const [editValue, setEditValue] = useState('');
   const [editField, setEditField] = useState('');
   const [originalBusinessData, setOriginalBusinessData] = useState(null);
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [isProductoModalVisible, setProductoModalVisible] = useState(false);
 
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible);
-  };
-
-  const handleEditItem = () => {
-    // Lógica para editar
-    toggleModal();
-  };
-
-  const handleDelete = () => {
-    // Lógica para eliminar
-    toggleModal();
   };
 
   function openEditModal(field) {
@@ -171,6 +161,90 @@ function NegocioEspecifScreen({ route }) {
     navigation.navigate('ItemView', { id: currentItemId, edit: false });
   }
 
+  // Funciones para la edición
+  function handleEdit() {
+    setModalVisible(false);
+    console.log(currentItemId)
+    navigation.navigate('EditItemScreen', { id: currentItemId, edit: true });
+  }
+
+  // Función para eliminar boton
+  function handleDelete() {
+    setModalVisible(false);
+    // Implementar la lógica de eliminación aquí
+    console.log('Eliminar negocio con ID:', currentItemId);
+  }
+
+  // ------------ ITEMS -------------
+
+  // Funciones para la edición
+  function handleEditItem() {
+    setModalVisible(false);
+    console.log(currentItemName)
+    console.log(currentItemId)
+    navigation.navigate('EditItemScreen', { id: currentItemId, edit: true });
+  }
+
+  // Función para eliminar boton
+  async function handleDeleteItem() {
+    setModalVisible(false);
+    try {
+      let token = await SecureStore.getItemAsync('auth_token');
+      if (!token) {
+        token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.G_SwrKpXhr33H0xf-R6nQfIhUTA0Kd8vkJh5FEKXPLM';
+      }
+      await axios.delete(`${apiUrl}items/${currentItemId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setItemData(prevItems => prevItems.filter(item => item._id !== currentItemId));
+      console.log('Item eliminado con ID:', currentItemId);
+    } catch (error) {
+      console.error('Error eliminando el item:', error);
+    }
+  }
+
+  // Función para agregar un nuevo producto
+  const handleSaveNewItem = async (newItem) => {
+    setProductoModalVisible(false);
+    try {
+      let token = await SecureStore.getItemAsync('auth_token');
+      if (!token) {
+        token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.G_SwrKpXhr33H0xf-R6nQfIhUTA0Kd8vkJh5FEKXPLM';
+      }
+  
+      const formData = new FormData();
+      formData.append('negocio_id', businessId);
+      formData.append('name', newItem.name);
+      formData.append('price', newItem.price);
+      formData.append('tag', newItem.tag);
+      formData.append('description', newItem.description);
+  
+      if (newItem.photo) {
+        const photoUriParts = newItem.photo.split('.');
+        const fileType = photoUriParts[photoUriParts.length - 1];
+        formData.append('images', {
+          uri: newItem.photo,
+          name: `photo.${fileType}`,
+          type: `image/${fileType}`,
+        });
+      }
+  
+      const response = await axios.post(`${apiUrl}items/create/`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+  
+      setItemData(prevItems => [...prevItems, response.data.item]);
+    } catch (error) {
+      console.error('Error agregando el item:', error);
+    }
+  };
+  
+
   // Función para hacer la solicitud con encabezado
   const fetchData = async () => {
     setLoading(true);
@@ -279,14 +353,16 @@ function NegocioEspecifScreen({ route }) {
             <View
               style={styles.viewAgregar}>
               <TouchableOpacity
-                style={{ flexDirection: 'row' }}>
+                style={{ flexDirection: 'row' }}
+                onPress={() => setProductoModalVisible(true)}
+                >
                 <Image
                   source={plusAdd}
                   style={{ width: 20, height: 20, marginHorizontal: 10 }} />
                 <Text>Agregar Producto</Text>
               </TouchableOpacity>
             </View>) : null}
-          {itemData && itemData.map((item, index) => (
+          {itemData && itemData.slice().reverse().map((item, index) => (
 
             <ContainerItem
               key={index}
@@ -301,11 +377,12 @@ function NegocioEspecifScreen({ route }) {
         </ScrollView>
       )}
 
-      <ActionModal
-        isVisible={isModalVisible}
-        onClose={toggleModal}
+      <EditItemModal
+        name={currentItemName}
+        visible={isModalVisible}
+        onClose={() => setModalVisible(false)}
         onEdit={handleEditItem}
-        onDelete={handleDelete}
+        onDelete={handleDeleteItem}
       />
 
       <EditModal
@@ -316,9 +393,15 @@ function NegocioEspecifScreen({ route }) {
         onChange={setEditValue}
         onSave={applyLocalChanges}
       />
+      
       <SuccessModal
         visible={successModalVisible}
         onClose={() => setSuccessModalVisible(false)}
+      />
+      <ProductoModal
+        visible={isProductoModalVisible}
+        onClose={() => setProductoModalVisible(false)}
+        onSave={handleSaveNewItem}
       />
       {editState ? (
         <View

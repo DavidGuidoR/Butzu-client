@@ -16,7 +16,7 @@ const ContainerItem = ({ photo, name, description, price, editar, onEditPress })
         <Text style={styles.description}>{description}</Text>
         <Text style={styles.price}>${price}</Text>
       </View>
-      <Image 
+      <Image
         source={photo ? { uri: photo } : noImage}
         style={styles.image}
       />
@@ -32,9 +32,10 @@ const ContainerItem = ({ photo, name, description, price, editar, onEditPress })
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 10,
+    marginVertical: 5,
     flexDirection: 'row',
-    padding: 12,
+    paddingVertical: 15,
+    paddingHorizontal: 10,
     backgroundColor: '#ffffff',
     borderRadius: 20,
     alignItems: 'center',
@@ -60,20 +61,17 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: 'bold',
-    fontSize: 22,
-    borderBottomWidth: 2,
-    borderBottomColor: 'black',
-    borderStyle: 'dashed',
-    paddingBottom: 10, 
+    fontSize: 18,
   },
   descriptionContainer: {
-    maxHeight: 50, 
+    maxHeight: 50,
   },
   description: {
-    paddingTop: 10,
+    paddingTop: 5,
     fontSize: 14,
   },
   price: {
+    paddingTop: 5,
     fontSize: 16,
     fontWeight: 'bold',
     color: '#5b5b5b'

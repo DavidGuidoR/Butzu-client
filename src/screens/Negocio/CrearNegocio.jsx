@@ -85,7 +85,7 @@ const CrearNegocioScreen = () => {
     });
 
      if (!result.canceled && result.assets && result.assets.length > 0) {
-      setter(result.assets[0].uri);
+      setter(result.assets[0]);
     }
   };
 
