@@ -58,6 +58,7 @@ function HomeScreen() {
           {negociosFiltrados.map(negocio => (
             <TouchableOpacity
             key={negocio._id}
+            activeOpacity={0.9}
             onPress={() => navigateToBusiness(negocio._id)}
           >
             <MiComponente

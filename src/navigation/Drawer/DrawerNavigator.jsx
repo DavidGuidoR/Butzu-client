@@ -42,6 +42,8 @@ function CustomDrawerContent(props) {
 function MainStackNavigator({ isAuthenticated }) {
   return (
     <Stack.Navigator>
+      
+      <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }}/>
       <Stack.Screen name="NegocioEspecif" component={NegocioEspecif} options={{ headerShown: false }}/>
       <Stack.Screen name="CrearNegocio"> 
         {

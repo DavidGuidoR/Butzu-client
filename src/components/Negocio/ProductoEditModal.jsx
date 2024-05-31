@@ -4,15 +4,17 @@ import * as ImagePicker from 'expo-image-picker';
 import noImage from '@assets/no-image.png';
 import editImage from '@assets/penEdit.png'
 
-const ProductoModal = ({ visible, onClose, initialName, initialPrice, initialTag, initialDescription, initialPhoto, onSave }) => {
+const ProductoEditModal = ({ visible, onClose, initialId, initialName, initialPrice, initialTag, initialDescription, initialPhoto, onSave }) => {
+  const [id, setId] = useState(initialId);
   const [name, setName] = useState(initialName);
   const [price, setPrice] = useState(initialPrice);
   const [tag, setTag] = useState(initialTag);
   const [description, setDescription] = useState(initialDescription);
   const [photo, setPhoto] = useState(initialPhoto);
+  console.log(photo);
 
   const handleSave = () => {
-    onSave({ name, price, tag, description, photo });
+    onSave({ id, name, price, tag, description, photo });
     onClose();
   };
 
@@ -193,4 +195,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ProductoModal;
+export default ProductoEditModal;

@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Text, StyleSheet, ScrollView, View, Image, TouchableOpacity, Dimensions } from 'react-native';
+import { ImageBackground, Text, StyleSheet, ScrollView, View, Image, TouchableOpacity, Dimensions } from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import * as SecureStore from 'expo-secure-store';
-import EditItemModal from '@components/Negocio/EditItemModal';
 import axios from 'axios';
 import ContainerItem from '@components/ContainerItem';
 import EditModal from '@components/Negocio/ModalEditNegocio';
@@ -16,9 +15,14 @@ import tickButton from '@assets/tick-button.png';
 import qrButton from '@assets/QR.png';
 import pdfButton from '@assets/docs.png';
 import { Button } from 'react-native-web';
+import WaveBottomColor from '@/vectores/WaveBottomColor';
+import WaveTopColor from '@/vectores/WaveTopColor';
 import ProductoModal from '@components/Negocio/ProductoModal';
+import ProductoEditModal from '@components/Negocio/ProductoEditModal';
 const apiUrl = Constants.expoConfig.extra.API_URL;
 const screenWidth = Dimensions.get('window').width;
+import ColorPickerWheel from '@/components/pickers/ColorPickerWheel';
+import ActionModal from '@components/Negocio/ModalNegocio';
 
 
 function NegocioEspecifScreen({ route }) {
@@ -39,9 +43,26 @@ function NegocioEspecifScreen({ route }) {
   const [originalBusinessData, setOriginalBusinessData] = useState(null);
   const [isModalVisible, setModalVisible] = useState(false);
   const [isProductoModalVisible, setProductoModalVisible] = useState(false);
+  const [isProductoEditModalVisible, setProductoEditModalVisible] = useState(false);
+  const [colorTop, setColorTop] = useState();
+  const [showModal, setShowModal] = useState(false);
+  const [currentItem, setCurrentItem] = useState(null);
 
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible);
+  };
+
+  const openEditItemModal = (item) => {
+    setCurrentItem(item);
+    setProductoEditModalVisible(true);
+  };
+
+  const onSelectColor = ({ hex }) => {
+    setColorTop(hex);
+    setBusinessData(prevData => ({
+      ...prevData,
+      color_top: hex
+    }));
   };
 
   function openEditModal(field) {
@@ -141,9 +162,8 @@ function NegocioEspecifScreen({ route }) {
 
 
 
-  function openModalWithId(itemId, itemName) {
-    setCurrentItemId(itemId);
-    setCurrentItemName(itemName);
+  function openModalWithId(item) {
+    setCurrentItem(item)
     setModalVisible(true);
   }
 
@@ -163,9 +183,9 @@ function NegocioEspecifScreen({ route }) {
 
   // Funciones para la edición
   function handleEdit() {
-    setModalVisible(false);
-    console.log(currentItemId)
-    navigation.navigate('EditItemScreen', { id: currentItemId, edit: true });
+    setModalVisible(false)
+    setProductoEditModalVisible(true);
+    
   }
 
   // Función para eliminar boton
@@ -177,14 +197,42 @@ function NegocioEspecifScreen({ route }) {
 
   // ------------ ITEMS -------------
 
-  // Funciones para la edición
-  function handleEditItem() {
-    setModalVisible(false);
-    console.log(currentItemName)
-    console.log(currentItemId)
-    navigation.navigate('EditItemScreen', { id: currentItemId, edit: true });
-  }
+  const handleEditItem = async (editedItem) => {
+    setProductoEditModalVisible(false);
+    try {
+      let token = await SecureStore.getItemAsync('auth_token');
+      if (!token) {
+        token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.G_SwrKpXhr33H0xf-R6nQfIhUTA0Kd8vkJh5FEKXPLM';
+      }
 
+      const formData = new FormData();
+      formData.append('name', editedItem.name);
+      formData.append('price', editedItem.price);
+      formData.append('tag', editedItem.tag);
+      formData.append('description', editedItem.description);
+
+      if (editedItem.photo && editedItem.photo !== currentItem.photo) {
+        const photoUriParts = editedItem.photo.split('.');
+        const fileType = photoUriParts[photoUriParts.length - 1];
+        formData.append('images', {
+          uri: editedItem.photo,
+          name: `photo.${fileType}`,
+          type: `image/${fileType}`,
+        });
+      }
+
+      await axios.patch(`${apiUrl}items/${editedItem.id}`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      setItemData(prevItems => prevItems.map(item => item._id === editedItem.id ? editedItem : item));
+    } catch (error) {
+      console.error('Error editando el item:', error);
+    }
+  };
   // Función para eliminar boton
   async function handleDeleteItem() {
     setModalVisible(false);
@@ -243,7 +291,6 @@ function NegocioEspecifScreen({ route }) {
       console.error('Error agregando el item:', error);
     }
   };
-  
 
   // Función para hacer la solicitud con encabezado
   const fetchData = async () => {
@@ -286,12 +333,15 @@ function NegocioEspecifScreen({ route }) {
   }, [businessId, isFocused, edit]);
 
   return (
-
-    <View>
+    <>
+    <View style={styles.container}>
       {loading ? (
         <Text>Cargando datos, por favor espere...</Text>
       ) : (
+        
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
+          <ImageBackground source={{ uri: businessData.background_photo }} style={styles.backgroundImage}></ImageBackground>
+          
           <View>
             <Image
               source={{ uri: businessData.banner }}
@@ -307,39 +357,51 @@ function NegocioEspecifScreen({ route }) {
                   style={{ width: 30, height: 35 }} />
               </TouchableOpacity>) : null}
           </View>
-          <View
-            style={styles.viewTitle}>
-            <View>
-              <Image
-                source={{ uri: businessData.photo }}
-                style={styles.imageLogo} />
+          <View style={styles.waveContainer}>
+            <WaveTopColor color={businessData.color_top} width={screenWidth} height={400} style={styles.waveTop} />
+            <View
+              style={styles.viewTitle}>
+              <View>
+                <Image
+                  source={{ uri: businessData.photo }}
+                  style={styles.imageLogo} />
+                {editState ? (
+                  <TouchableOpacity
+                    style={{ position: 'absolute', bottom: 5, right: 5 }}
+                    onPress={() => openEditModal('photo')}
+                  >
+                    <Image
+                      source={editImageWhite}
+                      style={{ width: 20, height: 20 }} />
+                  </TouchableOpacity>) : null}
+              </View>
+              <Text style={styles.textName}>{businessData.business_name}</Text>
               {editState ? (
                 <TouchableOpacity
-                  style={{ position: 'absolute', bottom: 5, right: 5 }}
-                  onPress={() => openEditModal('photo')}
+                  onPress={() => openEditModal('business_name')}
                 >
                   <Image
-                    source={editImageWhite}
-                    style={{ width: 20, height: 20 }} />
+                    source={editImage}
+                    style={{ width: 20, height : 20 }}
+                  />
                 </TouchableOpacity>) : null}
             </View>
-            <Text style={styles.textName}>{businessData.business_name}</Text>
-            {editState ? (
-              <TouchableOpacity
-                onPress={() => openEditModal('business_name')}
-              >
-                <Image
-                  source={editImage}
-                  style={{ width: 20, height: 20 }}
-                />
-              </TouchableOpacity>) : null}
+            <ColorPickerWheel 
+              onCompleteSelect={onSelectColor}
+              onPressModal={() => setShowModal(true)}
+              showModal={showModal}
+              setShowModal={() => setShowModal(false)}
+              styleButton={{ position: 'absolute', bottom: 70, left: 150 }}
+            />
           </View>
           <View
             style={{ flex: 1, justifyContent: 'center', flexDirection: 'row' }}>
-            <Text
-              style={styles.textDescription}>
-              {businessData.description}
-            </Text>
+            <View style={styles.textDescriptionContainer}>
+              <Text
+                style={styles.textDescription}>
+                {businessData.description}
+              </Text>
+            </View>
             {editState ? (
               <TouchableOpacity
                 onPress={() => openEditModal('description')}
@@ -358,32 +420,26 @@ function NegocioEspecifScreen({ route }) {
                 >
                 <Image
                   source={plusAdd}
-                  style={{ width: 20, height: 20, marginHorizontal: 10 }} />
+                  style={{ width: 20, height: 20, marginRight: 10 }} />
                 <Text>Agregar Producto</Text>
               </TouchableOpacity>
             </View>) : null}
           {itemData && itemData.slice().reverse().map((item, index) => (
-
-            <ContainerItem
-              key={index}
-              photo={item.photo}
-              name={item.name}
-              description={item.description}
-              price={item.price}
-              editar={true}
-              onEditPress={() => openModalWithId(item._id, item.name)}
-            />
+            <React.Fragment key={index}>
+              <ContainerItem
+                key={index}
+                photo={item.photo}
+                name={item.name}
+                description={item.description}
+                price={item.price}
+                editar={true}
+                onEditPress={() => openModalWithId(item)}
+              />
+            </React.Fragment>
           ))}
+          <WaveBottomColor color={businessData.color_top} width={screenWidth} height={200} style={styles.waveBottom} />
         </ScrollView>
       )}
-
-      <EditItemModal
-        name={currentItemName}
-        visible={isModalVisible}
-        onClose={() => setModalVisible(false)}
-        onEdit={handleEditItem}
-        onDelete={handleDeleteItem}
-      />
 
       <EditModal
         visible={editModalVisible}
@@ -393,15 +449,39 @@ function NegocioEspecifScreen({ route }) {
         onChange={setEditValue}
         onSave={applyLocalChanges}
       />
+
+      <ProductoModal
+        visible={isProductoModalVisible}
+        onClose={() => setProductoModalVisible(false)}
+        onSave={handleSaveNewItem}
+      />
       
       <SuccessModal
         visible={successModalVisible}
         onClose={() => setSuccessModalVisible(false)}
       />
-      <ProductoModal
-        visible={isProductoModalVisible}
-        onClose={() => setProductoModalVisible(false)}
-        onSave={handleSaveNewItem}
+
+      {currentItem && (
+        <ProductoEditModal
+          visible={isProductoEditModalVisible}
+          onClose={() => setProductoEditModalVisible(false)}
+          initialId = {currentItem.id}
+          initialName={currentItem.name}
+          initialPrice={currentItem.price}
+          initialTag={currentItem.tag}
+          initialDescription={currentItem.description}
+          initialPhoto={currentItem.photo}
+          onSave={handleEditItem}
+        />
+        )}
+      
+        <ActionModal
+        name={''}
+        visible={isModalVisible}
+        onClose={() => setModalVisible(false)}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        onView={handleView}
       />
       {editState ? (
         <View
@@ -430,59 +510,100 @@ function NegocioEspecifScreen({ route }) {
         </View>
       ) : null}
     </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    zIndex: -2,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'transparent',
     justifyContent: 'center',
   },
   scrollView: {
     width: '100%',
   },
   viewTitle: {
-    flex: 1,
-    width: screenWidth - 40,
-    flexWrap: 'wrap',
-    justifyContent: 'center',
+    position: 'absolute',
+    top: 50,
+    justifyContent: 'flex-start',
+    alignContent: 'flex-start',
     flexDirection: 'row',
-    marginVertical: 10,
     alignItems: 'center',
-    padding: 'auto'
   },
   viewAgregar: {
     flex: 1,
-    width: screenWidth - 30,
-    flexWrap: 'wrap',
-    justifyContent: 'flex-end',
+    width: 180,
+    justifyContent: 'center',
     flexDirection: 'row',
     marginTop: 20,
+    marginHorizontal: 20,
     alignItems: 'center',
-    padding: 'auto'
+    elevation: 5,
+    backgroundColor: 'white',
+    borderRadius: 15,
+    padding: 10,
   },
   imageBanner: {
     width: '100%',
     aspectRatio: 7 / 3,
-    marginBottom: 10
   },
   imageLogo: {
     width: 60,
     height: 60,
     borderRadius: 30,
   },
+  waveContainer: {
+    position: 'relative',
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  
+  waveTop: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    zIndex: -1,
+  },
+  waveBottom: {
+    position: 'relative',
+    width: '100%',
+    height: 200,
+  },
   textName: {
     fontFamily: 'monospace',
     fontSize: 20,
     color: '#5b5b5b',
-    marginHorizontal: 15
+    marginHorizontal: 15,
+    textShadowColor: 'rgba(255, 255, 255, 0.75)',
+    textShadowOffset: { width: -0.5, height: 0.5 },
+    textShadowRadius: 1,
+  },
+  textDescriptionContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    flexDirection: 'row',
+    backgroundColor: 'white',
+    borderRadius: 15,
+    padding: 5,
+    marginHorizontal: 15,
+    marginBottom: 15,
+    elevation: 5,
   },
   textDescription: {
     fontFamily: 'monospace',
     fontSize: 15,
     color: '#5b5b5b',
-    marginHorizontal: 15
+    backgroundColor: 'withe'
   },
   buttonQr: {
     width: 30,

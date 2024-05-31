@@ -8,6 +8,9 @@ const WaveTopColor = ({ color, width}) => {
   // Calcular la altura basada en la proporción y el ancho
   const height = typeof width === 'number' ? width / aspectRatio : '100%';
 
+  
+
+  
   return (
     <Svg width={width} height={height} viewBox="0 0 1440 690" preserveAspectRatio="none">
       <Path
